@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <title>{{ page.title | default: site.title }}</title>
+  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
+  <link rel="icon" href="{{ "/assets/images/favicon.ico" | relative_url }}">
+</head>
+<body>
+  <!-- ヘッダー部分 -->
+  <header>
+    <div class="container">
+      <h1><a href="{{ "/" | relative_url }}">{{ site.title }}</a></h1>
+      <nav>
+        <ul>
+          <li><a href="{{ "/index.html" | relative_url }}">トップ</a></li>
+          <li><a href="{{ "/activities/" | relative_url }}">活動内容</a></li>
+          <li><a href="{{ "/members/" | relative_url }}">メンバー</a></li>
+          <li><a href="{{ "/contact/" | relative_url }}">連絡先</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main>
+    <div class="container">
+      <!-- ページコンテンツをここに挿入 -->
+      {{ content }}
+    </div>
+  </main>
+
+  <!-- フッター部分 -->
+  <footer>
+    <div class="container">
+      <p>&copy; {{ site.time | date: "%Y" }} {{ site.title }} | All Rights Reserved.</p>
+    </div>
+  </footer>
+  
+</body>
+</html>

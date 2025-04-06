@@ -1,0 +1,5 @@
+title: My Minimal Site
+collections:
+  pages:
+    output: true
+    permalink: /:name/
