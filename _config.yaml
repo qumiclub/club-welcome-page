@@ -1,5 +1,7 @@
 url: "https://haruto-md.github.io"
-baseurl: "/websiteTemp"
+repository: "haruto-md/websiteTemp"
+
+locale: "ja-JP"
 title: 九州大学医学部情報研
 collections:
   pages:
