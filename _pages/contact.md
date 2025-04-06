@@ -1,14 +1,13 @@
 ---
 layout: default
-title: 連絡先
+title: Contact
 ---
 
-# 連絡先
+# Contact
 
 部活への問い合わせは以下の方法でご連絡ください。
 
-- メール: [example@university.com](mailto:example@university.com)
-- SNS: [Twitter](https://twitter.com/部活のTwitterアカウント)
-- Facebook: [Facebookページリンク]
-
-質問があれば、お気軽にご連絡ください。
+- メール: [miclub.ku@gmail.com](mailto:miclub.ku@gmail.com)
+- SNS: [Twitter](https://x.com/qumiclub)
+- Discordサーバー: [招待リンク](https://discord.gg/wHTvNxrAM9)
+- 顧問： データ駆動イノベーション推進本部 教授 西岡宏彦 先生

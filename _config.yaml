@@ -1,5 +1,8 @@
-title: My Minimal Site
+title: 九州大学医学部情報研
 collections:
   pages:
+    output: true
+    permalink: /:name/
+  posts:
     output: true
     permalink: /:name/
