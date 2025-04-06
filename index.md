@@ -29,4 +29,4 @@ title: 九州大学医学部情報研 -部活紹介-
 ---
 
 ### 見学・体験はいつでもOK！
-[Discordサーバー](https://discord.gg/wHTvNxrAM9)、[Twitterアカウント]()からいつでもアクセスしてください！
+[Discordサーバー](https://discord.gg/wHTvNxrAM9)、[Twitterアカウント](https://x.com/qumiclub)からいつでもアクセスしてください！
