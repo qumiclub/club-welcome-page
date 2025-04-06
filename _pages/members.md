@@ -1,6 +1,6 @@
 ---
 layout: default
-title: メンバー紹介
+title: 九州大学医学部情報研 -メンバー紹介-
 ---
 
 ## ToDo

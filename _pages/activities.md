@@ -1,10 +1,10 @@
 ---
 layout: default
-title: 活動内容
+title: 九州大学医学部情報研 -活動内容-
 ---
 
 ## Kaggle
-- [Stanford RNA 3D Folding](/posts/2025-02-27-kaggle-competition/) - 2025-02-27 ~ 2025-05-29
+- [Stanford RNA 3D Folding]({{site.baseurl}}/posts/2025-02-27-kaggle-competition/) - 2025-02-27 ~ 2025-05-29
 - [something]()
 
 

@@ -1,8 +1,11 @@
 url: "https://haruto-md.github.io"
+baseurl: "/websiteTemp"
 repository: "haruto-md/websiteTemp"
 
 locale: "ja-JP"
 title: 九州大学医学部情報研
+name: "九州大学医学部情報研"
+description: "九州大学医系サークル・九州大学医学部情報研です、病院キャンパスでKaggleや統計解析の勉強会等の活動を行っています"
 collections:
   pages:
     output: true

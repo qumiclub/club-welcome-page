@@ -8,7 +8,7 @@
 
 - **`_config.yml`**
   サイトの設定ファイルです。`url`や`repository`など、サイト全体の設定を変更できます。
-  転用する場合は、`url`と`repository`修正が必須です。
+  転用する場合は、`url`と`repository`、`baseurl`の修正が必須です。
 
 - **`_layouts/`**
   サイト全体のレイアウトを管理するディレクトリです。

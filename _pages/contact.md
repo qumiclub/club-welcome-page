@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Contact
+title: 九州大学医学部情報研 -連絡先-
 ---
 
-# Contact
+# Contact Us
 
 部活への問い合わせは以下の方法でご連絡ください。
 
