@@ -1,0 +1,14 @@
+/* 全体の基本スタイル */
+body {
+  font-family: $base-font-family;
+  background-color: $body-bg-color;
+  color: $body-text-color;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: $container-width;
+  margin: 0 auto;
+  padding: 20px;
+}

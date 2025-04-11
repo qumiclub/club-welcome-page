@@ -1,0 +1,25 @@
+// Colors
+$primary-color: #00796b;
+$secondary-color: #005379;
+$link-color-h1: #2c84f7;
+$link-hover-color-h1: #705af1;
+$nav-link-color: $primary-color;
+$nav-link-hover-color: #004d40;
+
+$body-bg-color: #f4f4f4;
+$body-text-color: #333;
+$main-bg-color: #fff;
+$footer-bg-color: $primary-color;
+$footer-text-color: white;
+$box-shadow-color: rgba(0, 0, 0, 0.1);
+
+// Fonts
+$base-font-family: /* Google Fonts / Android / Linux */ "Noto Sans JP",
+                    /* Windows 10+, macOS 10.9+ */ "游ゴシック体", YuGothic, "游ゴシック", "Yu Gothic",
+                    /* Windows Vista+ */ "メイリオ", Meiryo,
+                    /* macOS 10.6+ */ "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro",
+                    /* 古いWindows */ "MS Pゴシック", "MS PGothic",
+                    /* 総称フォント */ sans-serif;
+
+// Layout
+$container-width: 80%;

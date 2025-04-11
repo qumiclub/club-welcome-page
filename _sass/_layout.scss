@@ -1,0 +1,40 @@
+nav {
+  ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+    margin-top: 20px;
+
+    li {
+      display: inline;
+      margin-right: 20px;
+
+      // 最後の要素の右マージンを削除する場合 (オプション)
+      &:last-child {
+        margin-right: 0;
+      }
+
+      a {
+        text-decoration: none;
+        color: $nav-link-color;
+        font-weight: bold;
+
+        &:hover {
+          color: $nav-link-hover-color;
+        }
+      }
+    }
+  }
+}
+
+footer {
+  background-color: $footer-bg-color;
+  color: $footer-text-color;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 40px;
+
+  p {
+    margin: 0;
+  }
+}
