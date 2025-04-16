@@ -1,18 +1,11 @@
-<header>
-  <div class="container">
-    <!-- ページタイトルが見出しとして使われることが多いので、h1はページコンテンツに残すことが多い -->
-    <!-- ここではサイトタイトルをdivなどに入れ、ページタイトルをh1に使う想定にするか、 -->
-    <!-- もしくはこのh1をサイトタイトルとして固定するか、設計による -->
-    <!-- 元のコード通りにするなら以下 -->
-    <h1><a href="{{ '/home/' | relative_url }}">{{ site.title | escape }}</a></h1>
-    <nav>
-      <!-- ナビゲーションを一つにまとめるか、役割で分けるかは設計次第 -->
-      <!-- 元のコード通りだと以下 -->
+<header  class="site-header">
+  <div class="container header-container">
+    <div class="site-title">
+      <a href="{{ '/home/' | relative_url }}">{{ site.title | escape }}</a>
+    </div>
+    <nav  class="site-nav">
       <ul>
-        <li><a href="{{ '/home/' | relative_url }}">メインページ</a></li>
-        <!-- 必要なら他のトップレベルナビゲーション -->
-      </ul>
-      <ul>
+        <li><a href="{{ '/home/' | relative_url }}">ABOUT US</a></li>
         <li><a href="{{ '/activities/' | relative_url }}">活動内容</a></li>
         <li><a href="{{ '/members/' | relative_url }}">メンバー</a></li>
         <li><a href="{{ '/contact/' | relative_url }}">連絡先</a></li>

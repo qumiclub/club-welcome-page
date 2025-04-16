@@ -14,12 +14,33 @@ $footer-text-color: white;
 $box-shadow-color: rgba(0, 0, 0, 0.1);
 
 // Fonts
-$base-font-family: /* Google Fonts / Android / Linux */ "Noto Sans JP",
-                    /* Windows 10+, macOS 10.9+ */ "游ゴシック体", YuGothic, "游ゴシック", "Yu Gothic",
-                    /* Windows Vista+ */ "メイリオ", Meiryo,
-                    /* macOS 10.6+ */ "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro",
-                    /* 古いWindows */ "MS Pゴシック", "MS PGothic",
-                    /* 総称フォント */ sans-serif;
+$base-font-family: Arial, Helvetica, sans-serif;
+
 
 // Layout
 $container-width: 80%;
+
+$intercard_margin: 0.5rem;
+$card-max-width: 875px;              // カードの最小幅を少し小さく
+$card-bg-color: #fff;
+$card-border-color: #e0e0e0;
+$card-border-radius: 6px;              // 角丸を少し小さく
+$card-padding: 1.2rem;               // 内部の余白を少し減らす
+$card-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); // 影を少し控えめに
+$card-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+$card-hover-transform: translateY(-3px); // 浮き上がりを少し控えめに
+
+$card-title-font-size: 1.15rem;      // タイトルサイズを少し小さく
+$card-title-color: #2a2a2a;
+$card-title-hover-color: #007bff;
+
+$card-meta-font-size: 0.85rem;       // メタ情報サイズを小さく
+$card-meta-color: #666;
+$card-meta-margin-bottom: 0.8rem;    // メタ情報下のマージンを調整
+
+$card-excerpt-font-size: 0.95rem;    // 抜粋サイズを小さく
+$card-excerpt-color: #444;
+$card-excerpt-line-height: 1.5;      // 行間を少し詰める
+
+$transition-duration: 0.2s;
+$transition-timing-function: ease-in-out;
