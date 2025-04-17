@@ -1,8 +1,9 @@
 ---
-layout: kaggle_competition
+layout: article
 title: "Stanford RNA 3D Folding"
-start_date: 2025-02-27
-end_date: 2025-05-29
+date: 2025-02-27
+author: N.Haruto
+tags: ["Kaggle"]
 ---
 
 ## コンペ詳細

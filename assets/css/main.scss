@@ -4,17 +4,14 @@
 
 @charset "utf-8";
 
-// 1. 変数 (常に最初にインポート)
 @import "variables";
 
-// 2. 基本スタイル (body, container)
 @import "base";
 
-// 3. タイポグラフィ (見出しなど)
 @import "typography";
 
-// 4. レイアウト (nav, footer)
-@import "layout";
+@import "header";
+@import "footer";
 
-// 5. メインコンテンツエリア
-@import "main_content";
+@import "articles";
+@import "components";

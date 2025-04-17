@@ -5,20 +5,23 @@ $link-color-h1: #2c84f7;
 $link-hover-color-h1: #705af1;
 $nav-link-color: $primary-color;
 $nav-link-hover-color: #004d40;
+$border-bottom-color:#494949;
 
-$body-bg-color: #f4f4f4;
+$body-bg-color: #ffffff;
 $body-text-color: #333;
 $main-bg-color: #fff;
 $footer-bg-color: $primary-color;
 $footer-text-color: white;
 $box-shadow-color: rgba(0, 0, 0, 0.1);
+$post-title-colar: #333;
 
 // Fonts
 $base-font-family: Arial, Helvetica, sans-serif;
 
 
 // Layout
-$container-width: 80%;
+$header-container-width: 80%;
+$body-container-width: 60%;
 
 $intercard_margin: 0.5rem;
 $card-max-width: 875px;              // カードの最小幅を少し小さく
@@ -41,6 +44,11 @@ $card-meta-margin-bottom: 0.8rem;    // メタ情報下のマージンを調整
 $card-excerpt-font-size: 0.95rem;    // 抜粋サイズを小さく
 $card-excerpt-color: #444;
 $card-excerpt-line-height: 1.5;      // 行間を少し詰める
+
+$tag-bg-color: #f0f0f0;
+$tag-text-color: #333;
+$tag-border-radius: 3px;
+$tag-margin: 0.25rem;
 
 $transition-duration: 0.2s;
 $transition-timing-function: ease-in-out;
