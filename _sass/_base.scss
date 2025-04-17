@@ -1,4 +1,12 @@
-/* 全体の基本スタイル */
+/* ページコンテンツ */
+main {
+  background-color: $main-bg-color;
+  padding: 20px;
+  margin-top: 0; // 元のCSSのまま
+  border-radius: 8px;
+  box-shadow: 0 2px 10px $box-shadow-color;
+}
+
 body {
   font-family: $base-font-family;
   background-color: $body-bg-color;
@@ -8,7 +16,7 @@ body {
 }
 
 .container {
-  width: $container-width;
+  width: $body-container-width;
   margin: 0 auto;
   padding: 20px;
 }
