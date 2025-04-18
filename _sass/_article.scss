@@ -1,0 +1,40 @@
+.article-content {
+  width: 80%; /* 全体の content の幅 */
+  margin: 0 auto; /* 中央寄せ */
+  padding: 20px;
+  display: flex; /* flexbox を有効にする */
+  flex-direction: row; /* 横並びにする */
+}
+.main-content {
+  width: 70%; /* 本文の幅を制限 */
+  padding-right: 20px; /* sub-content との間にスペースを作る */
+}
+.main-content h1,
+.main-content h2,
+.main-content h3 {
+  border-bottom: 1px solid #b1b1b1; /* 下線を引く */
+}
+
+.sub-content {
+  width: 30%; /* メタ情報の幅 */
+  position: relative; /* 親要素に position: relative を指定 */
+}
+.sub-content .table-of-content {
+  position: sticky;
+  top: 20px; /* 画面上部からの距離 */
+  height: fit-content; /* コンテンツの高さに合わせて高さを調整 */
+  background-color: #f9f9f9; /* 背景色を必要に応じて設定 */
+  padding: 10px; /* パディングを必要に応じて設定 */
+  border: 1px solid #ccc; /* ボーダーを必要に応じて設定 */
+  border-radius: 5px; /* 角丸を必要に応じて設定 */
+  text-decoration: none;
+}
+.sub-content .tag {
+  display: inline-block; /* 横並びにする */
+  background-color: $tag-bg-color;
+  color: $tag-text-color;
+  padding: 0.25rem 0.5rem;
+  border-radius: $tag-border-radius;
+  font-size: 0.75rem;
+  margin: $tag-margin;
+}
