@@ -7,26 +7,26 @@
   {% include header.html %}
 
   <main>
-    <div class="container">
-      <!-- 記事一覧のコンテンツ -->
-      <div class="post-list-cards">
-        {% for post in site.posts %}
-          <a href="{{ post.url | relative_url }}" class="post-card">
-            <!-- 記事のタイトルやメタ情報など -->
-          </a>
-        {% endfor %}
+    <div class="article-content">
+      <div class="main-content">
+        {{content}}
       </div>
-
-      <!-- タグのフィルタリングボタン -->
-      <div class="tag-filters">
-        <a href="#" class="tag-filter" data-tag="all">All</a>
-        {% for tag in site.tags %}
-          <a href="#" class="tag-filter" data-tag="{{ tag[0] }}">{{ tag[0] }}</a>
-        {% endfor %}
+      <div class="sub-content">
+        <div class="article-meta">
+          <p>著者: {{ page.author }}</p>
+          <p>
+            {% for tag in page.tags %}
+              <div class="tag">{{ tag }}</div>
+            {% endfor %}
+          </p>
+        </div>
+        <div class="table-of-content" id="toc">
+        </div>
       </div>
     </div>
   </main>
 
   {% include footer.html %}
+  <script type="text/javascript" src="{{ '/assets/js/toc.js' | relative_url }}"></script>
 </body>
 </html>
