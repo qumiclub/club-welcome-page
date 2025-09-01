@@ -1,96 +1,84 @@
 .container {
-    width: $body-container-width;
-    margin: 0 auto;
-    padding: 20px;
-  }
+  width: $body-container-width;
+  margin: 0 auto;
+  padding: 20px;
+}
 
 .cards-title {
-    color: #464040;
-    text-align: center;
+  color: #464040;
+  text-align: center;
 }
 
 .post-list-cards {
-    padding: 0;
-    margin: 1rem auto;
-    max-width: $card-max-width;
-    width: 70%;
+  padding: 0;
+  margin: 1rem auto;
+  max-width: $card-max-width;
+  width: 70%;
 }
-.post-card {
-    text-decoration: none;
-    background-color: $card-bg-color;
-    border: 1px solid $card-border-color;
-    border-radius: $card-border-radius;
-    padding: $card-padding;
-    box-shadow: $card-shadow;
-    transition: transform $transition-duration $transition-timing-function,
-                box-shadow $transition-duration $transition-timing-function;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: $intercard_margin;
 
-    &:hover {
+.post-card {
+  text-decoration: none;
+  background-color: $card-bg-color;
+  border: 1px solid $card-border-color;
+  border-radius: $card-border-radius;
+  padding: $card-padding;
+  box-shadow: $card-shadow;
+  transition: transform $transition-duration $transition-timing-function,
+              box-shadow $transition-duration $transition-timing-function;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: $intercard_margin;
+
+  &:hover {
     transform: $card-hover-transform;
     box-shadow: $card-hover-shadow;
-    }
-    .post-card-tags {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-wrap: wrap;
-        margin-top: 0.5rem; /* dateとauthorとの間隔 */
-    }
-    .tag {
-        background-color: $tag-bg-color;
-        color: $tag-text-color;
-        padding: 0.25rem 0.5rem;
-        border-radius: $tag-border-radius;
-        font-size: 0.75rem;
-        margin: $tag-margin;
-    }
-}
+  }
 
-.post-card-title {
-margin-top: 0;
-margin-bottom: 0.4rem; // メタ情報とのマージン調整
-font-size: $card-title-font-size;
-line-height: 1.3;
-    &:hover{
-        color: $card-title-hover-color;
-    }
-}
-
-.post-card-meta {
-    color: $card-meta-color;
-    font-size: $card-meta-font-size;
-    margin-bottom: $card-meta-margin-bottom;
-}
-
-.tag-filters{
-    text-align: center;
-    font-size: 1rem;
-    .tag-filter{
-        background-color: $tag-bg-color;
-        color: $tag-text-color;
-        padding: 0.25rem 0.5rem;
-        border-radius: $tag-border-radius;
-        // margin: $tag-margin;
-    }
-}
-
-.post-card-tags {
+  .post-card-tags {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-wrap: wrap;
     margin-top: 0.5rem; /* dateとauthorとの間隔 */
-}
-.tag {
+  }
+
+  .tag {
     background-color: $tag-bg-color;
     color: $tag-text-color;
     padding: 0.25rem 0.5rem;
     border-radius: $tag-border-radius;
     font-size: 0.75rem;
     margin: $tag-margin;
+  }
+}
+
+.post-card-title {
+  margin-top: 0;
+  margin-bottom: 0.4rem; // メタ情報とのマージン調整
+  font-size: $card-title-font-size;
+  line-height: 1.3;
+
+  &:hover{
+    color: $card-title-hover-color;
+  }
+}
+
+.post-card-meta {
+  color: $card-meta-color;
+  font-size: $card-meta-font-size;
+  margin-bottom: $card-meta-margin-bottom;
+}
+
+.tag-filters {
+  text-align: center;
+  font-size: 1rem;
+
+  .tag-filter {
+    background-color: $tag-bg-color;
+    color: $tag-text-color;
+    padding: 0.25rem 0.5rem;
+    border-radius: $tag-border-radius;
+    // margin: $tag-margin;
+  }
 }
