@@ -236,10 +236,8 @@ export default function Editor({ initialData }: EditorProps) {
                                 let src = (props.src as string) || '';
                                 if (src.startsWith('/assets/images/')) {
                                     // Rewrite relative path to GitHub Raw URL for preview
-                                    // Note: This assumes the repo is public or the user has access.
-                                    // For private repos, we might need a proxy or signed URL.
-                                    // Hardcoding repo for now as env vars are tricky in client components without NEXT_PUBLIC_
-                                    src = `https://raw.githubusercontent.com/hikagon0601/club-welcome-page/main${src}`;
+                                    // Using qumiclub as the owner since images are uploaded there
+                                    src = `https://raw.githubusercontent.com/qumiclub/club-welcome-page/main${src}`;
                                 }
                                 return <img {...props} src={src} style={{ maxWidth: '100%' }} />;
                             }
