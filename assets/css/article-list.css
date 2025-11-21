@@ -113,6 +113,16 @@
     font-size: 1.25rem;
     margin-bottom: 1rem;
     color: var(--text-color);
+    height: 4.5rem;
+    /* Fixed height for alignment (approx 3 lines) */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    /* Reset inherited styles from .container h2 if necessary */
+    margin-top: 0;
+    padding-bottom: 0.5rem;
+    /* Keep padding for border spacing */
 }
 
 .post-card-meta {
