@@ -1,8 +1,12 @@
 ---
 layout: article
 title: 記事作成アプリをリリースしました！
-author: Admin
-tags: [お知らせ, アプリ, 開発]
+author: Kai
+tags:
+  - お知らせ
+  - アプリ
+  - 開発
+date: '2025-11-21T10:42:34.558Z'
 ---
 
 部員のみなさん、こんにちは！
