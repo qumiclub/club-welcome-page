@@ -33,11 +33,11 @@ title: 九州大学医学部情報研 -部活紹介-
 ### 入部案内
 
 *   **入部資格:** 九州大学医学部に所属する学生（学部・学科不問）。プログラミング経験は問いません。
-*   **入部方法:** [Discordサーバー](https://discord.gg/wHTvNxrAM9) または [Twitterアカウント](https://x.com/qumiclub) からご連絡ください。見学・体験入部も随時受け付けています。
-*   **費用:** 部費は無料です。必要に応じて、書籍代やイベント参加費が発生する場合があります。
-*   **連絡先:**
-    *   Discord: [https://discord.gg/wHTvNxrAM9](https://discord.gg/wHTvNxrAM9)
+*   **入部方法:** 以下のGoogleフォームからお申し込みください。自動返信メールにて詳細をお送りします。
+    *   **入部申込フォーム:** [https://forms.gle/bvA5ruhdG87SCS8h8](https://forms.gle/bvA5ruhdG87SCS8h8)
+*   **その他の連絡先:**
     *   Twitter: [https://x.com/qumiclub](https://x.com/qumiclub)
+*   **費用:** 部費は無料です。必要に応じて、書籍代やイベント参加費が発生する場合があります。
 
 ### 写真・動画
 
@@ -45,9 +45,13 @@ title: 九州大学医学部情報研 -部活紹介-
 
 ### おわりに
 
-九州大学医学部情報研は、あなたの「医療×AI」への興味を形にする最高の場所です。私たちと一緒に、未来の医療を創造しましょう！見学・体験入部、大歓迎です。お気軽にご連絡ください！
+九州大学医学部情報研は、あなたの「医療×AI」への興味を形にする最高の場所です。私たちと一緒に、未来の医療を創造しましょう！見学・体験入部、大歓迎です。お気軽にお問い合わせください！
 
-**連絡先:**
+**入部希望の方はこちら:**
 
-*   Discord: [https://discord.gg/wHTvNxrAM9](https://discord.gg/wHTvNxrAM9)
+*   [入部申込フォーム](https://forms.gle/bvA5ruhdG87SCS8h8)
+
+**その他のお問い合わせ:**
+
 *   Twitter: [https://x.com/qumiclub](https://x.com/qumiclub)
+*   メール: [miclub.ku@gmail.com](mailto:miclub.ku@gmail.com)
