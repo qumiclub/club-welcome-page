@@ -117,6 +117,9 @@ export default function Editor({ initialData }: EditorProps) {
             <header className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Club Article Editor</h1>
                 <div className="flex items-center gap-4">
+                    <a href="/dashboard" className="text-blue-600 hover:text-blue-800 font-semibold">
+                        Dashboard
+                    </a>
                     <span className="text-sm text-gray-600">{session.user?.email}</span>
                     <button
                         onClick={() => signOut()}
