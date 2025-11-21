@@ -113,8 +113,8 @@
     font-size: 1.25rem;
     margin-bottom: 1rem;
     color: var(--text-color);
-    height: 4.5rem;
-    /* Fixed height for alignment (approx 3 lines) */
+    height: 6rem;
+    /* Fixed height for alignment (approx 3 lines with 1.6 line-height) */
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;
