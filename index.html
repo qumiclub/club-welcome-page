@@ -41,14 +41,12 @@ description: "九州大学医学部情報研は、医療ビッグデータを解
     <div class="container">
         <h2>ニュース</h2>
         <ul class="news-list">
+            {% for item in site.data.news %}
             <li>
-                <span class="date">2023.10.27</span>
-                <span class="content">ウェブサイトをリニューアルしました！</span>
+                <span class="date">{{ item.date }}</span>
+                <span class="content">{{ item.content }}</span>
             </li>
-            <li>
-                <span class="date">2023.10.01</span>
-                <span class="content">新入部員募集中です。</span>
-            </li>
+            {% endfor %}
         </ul>
     </div>
 </section>
