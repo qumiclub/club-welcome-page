@@ -2,14 +2,28 @@
 
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useSession, signIn, signOut } from "next-auth/react";
 
-export default function Editor() {
+interface EditorProps {
+    initialData?: {
+        title: string;
+        author: string;
+        tags: string;
+        content: string;
+        sha?: string;
+        filename?: string;
+    } | null;
+}
+
+export default function Editor({ initialData }: EditorProps) {
     const { data: session } = useSession();
-    const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
-    const [tags, setTags] = useState('');
-    const [content, setContent] = useState('');
+    const [title, setTitle] = useState(initialData?.title || '');
+    const [author, setAuthor] = useState(initialData?.author || '');
+    const [tags, setTags] = useState(initialData?.tags || '');
+    const [content, setContent] = useState(initialData?.content || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [message, setMessage] = useState('');
@@ -30,6 +44,11 @@ export default function Editor() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!confirm('Are you sure you want to publish this article?')) {
+            return;
+        }
+
         setIsSubmitting(true);
         setMessage('');
 
@@ -44,6 +63,8 @@ export default function Editor() {
                     author,
                     tags: tags.split(',').map(t => t.trim()).filter(t => t),
                     content,
+                    sha: initialData?.sha,
+                    filename: initialData?.filename,
                 }),
             });
 
@@ -54,11 +75,11 @@ export default function Editor() {
             }
 
             setMessage('Successfully published! It may take a few minutes to appear on the site.');
-            // Reset form? Maybe not, in case they want to edit.
+            // Disable further submissions for this session to prevent duplicates
+            // Optionally reset form here if you want to allow new posts
         } catch (error: any) {
             setMessage(`Error: ${error.message}`);
-        } finally {
-            setIsSubmitting(false);
+            setIsSubmitting(false); // Re-enable only on error
         }
     };
 
@@ -188,7 +209,30 @@ export default function Editor() {
                         {tags && <span className="ml-4">Tags: {tags}</span>}
                     </div>
                     <hr className="my-4" />
-                    <ReactMarkdown>{content}</ReactMarkdown>
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            code({ node, inline, className, children, ...props }: any) {
+                                const match = /language-(\w+)/.exec(className || '')
+                                return !inline && match ? (
+                                    <SyntaxHighlighter
+                                        style={vscDarkPlus}
+                                        language={match[1]}
+                                        PreTag="div"
+                                        {...props}
+                                    >
+                                        {String(children).replace(/\n$/, '')}
+                                    </SyntaxHighlighter>
+                                ) : (
+                                    <code className={className} {...props}>
+                                        {children}
+                                    </code>
+                                )
+                            }
+                        }}
+                    >
+                        {content}
+                    </ReactMarkdown>
                 </div>
             </div>
         </div>

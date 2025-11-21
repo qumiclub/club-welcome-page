@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { title, author, tags, content } = await req.json();
+        const { title, author, tags, content, sha, filename } = await req.json();
 
         if (!title || !content) {
             return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
@@ -39,37 +39,26 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "GitHub configuration missing" }, { status: 500 });
         }
 
-        // Generate filename from date and title
-        const dateStr = new Date().toISOString().split('T')[0];
-        const safeTitle = title.replace(/[^a-z0-9\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\-_]/gi, '-');
-        const path = `_posts/${dateStr}-${safeTitle}.md`;
-
-        // Commit to GitHub
-        // First, check if file exists (to get sha for update, though we probably want to create new)
-        // For simplicity, we assume creating new file. If exists, it will fail or we can handle update.
-        // Let's try to create/update.
-
-        let sha;
-        try {
-            const { data } = await octokit.repos.getContent({
-                owner,
-                repo,
-                path,
-            });
-            if (!Array.isArray(data)) {
-                sha = data.sha;
-            }
-        } catch (e) {
-            // File doesn't exist, which is fine
+        // Determine path
+        let path = "";
+        if (filename) {
+            // Updating existing file
+            path = `_posts/${filename}`;
+        } else {
+            // Creating new file
+            const dateStr = new Date().toISOString().split('T')[0];
+            const safeTitle = title.replace(/[^a-z0-9\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\-_]/gi, '-');
+            path = `_posts/${dateStr}-${safeTitle}.md`;
         }
 
+        // Commit to GitHub
         await octokit.repos.createOrUpdateFileContents({
             owner,
             repo,
             path,
-            message: `Add article: ${title} by ${session.user?.email}`,
+            message: `${filename ? 'Update' : 'Add'} article: ${title} by ${session.user?.email}`,
             content: Buffer.from(fileContent).toString('base64'),
-            sha,
+            sha, // Required for updates
             committer: {
                 name: session.user?.name || "Editor App",
                 email: session.user?.email || "editor@example.com",
