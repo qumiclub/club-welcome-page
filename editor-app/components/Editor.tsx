@@ -207,7 +207,7 @@ export default function Editor({ initialData }: EditorProps) {
                                     {tagSearch && (
                                         <div className="absolute z-10 w-full bg-white border rounded shadow-lg max-h-40 overflow-y-auto mt-1">
                                             {availableTags
-                                                .filter(t => t.toLowerCase().includes(tagSearch.toLowerCase()) && !tags.split(',').map(x => x.trim()).includes(t))
+                                                .filter(t => String(t).toLowerCase().includes(tagSearch.toLowerCase()) && !tags.split(',').map(x => x.trim()).includes(String(t)))
                                                 .map(tag => (
                                                     <button
                                                         key={tag}
@@ -219,7 +219,7 @@ export default function Editor({ initialData }: EditorProps) {
                                                     </button>
                                                 ))}
                                             {/* Option to add new tag if it doesn't exist */}
-                                            {!availableTags.some(t => t.toLowerCase() === tagSearch.toLowerCase()) && (
+                                            {!availableTags.some(t => String(t).toLowerCase() === tagSearch.toLowerCase()) && (
                                                 <button
                                                     onClick={() => addTag(tagSearch)}
                                                     className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-blue-600 font-semibold"
