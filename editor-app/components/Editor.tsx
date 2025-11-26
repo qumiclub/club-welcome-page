@@ -102,7 +102,8 @@ export default function Editor({ initialData }: EditorProps) {
                 throw new Error(data.error || 'Failed to upload image');
             }
 
-            const imageMarkdown = `![${file.name}](${data.url})`;
+            // Insert with {{ site.baseurl }} for Jekyll compatibility
+            const imageMarkdown = `![${file.name}]({{ site.baseurl }}${data.url})`;
             setContent(prev => prev + '\n' + imageMarkdown + '\n');
             setMessage('Image uploaded successfully!');
         } catch (error: any) {
@@ -167,7 +168,7 @@ export default function Editor({ initialData }: EditorProps) {
                             onChange={(e) => setTitle(e.target.value)}
                             required
                         />
-                        <div className="flex gap-2 mb-2">
+                        <div className="flex gap-2 mb-2 items-start">
                             <input
                                 type="text"
                                 placeholder="Author Name"
@@ -275,6 +276,10 @@ export default function Editor({ initialData }: EditorProps) {
                             },
                             img: ({ node, ...props }) => {
                                 let src = (props.src as string) || '';
+                                // Handle Jekyll baseurl
+                                if (src.includes('{{ site.baseurl }}')) {
+                                    src = src.replace('{{ site.baseurl }}', '');
+                                }
                                 if (src.startsWith('/assets/images/')) {
                                     // Rewrite relative path to GitHub Raw URL for preview
                                     // Using qumiclub as the owner since images are uploaded there
