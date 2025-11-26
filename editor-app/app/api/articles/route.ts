@@ -57,11 +57,13 @@ export async function GET() {
                                 ? frontmatter.tags
                                 : String(frontmatter.tags).split(',').map(t => t.trim());
 
-                            tags.forEach((tag: string) => allTags.add(tag));
+                            tags.forEach((tag: any) => {
+                                if (tag) allTags.add(String(tag));
+                            });
                         }
 
                         if (frontmatter.author) {
-                            allAuthors.add(frontmatter.author);
+                            allAuthors.add(String(frontmatter.author));
                         }
 
                         articles.push({
