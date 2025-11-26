@@ -41,7 +41,7 @@ export default function EditPage({ params }: { params: Promise<{ filename: strin
             setInitialData({
                 title: frontmatter.title || "",
                 author: frontmatter.author || "",
-                tags: Array.isArray(frontmatter.tags) ? frontmatter.tags.join(", ") : frontmatter.tags || "",
+                tags: Array.isArray(frontmatter.tags) ? frontmatter.tags.join(", ") : String(frontmatter.tags || ""),
                 content: content,
                 sha: data.sha,
                 filename: filename,

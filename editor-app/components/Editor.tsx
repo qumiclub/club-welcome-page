@@ -139,7 +139,7 @@ export default function Editor({ initialData }: EditorProps) {
     }, [session]);
 
     const addTag = (tag: string) => {
-        const currentTags = tags.split(',').map(t => t.trim()).filter(t => t);
+        const currentTags = String(tags).split(',').map(t => t.trim()).filter(t => t);
         if (!currentTags.includes(tag)) {
             const newTags = [...currentTags, tag].join(', ');
             setTags(newTags);
@@ -207,7 +207,7 @@ export default function Editor({ initialData }: EditorProps) {
                                     {tagSearch && (
                                         <div className="absolute z-10 w-full bg-white border rounded shadow-lg max-h-40 overflow-y-auto mt-1">
                                             {availableTags
-                                                .filter(t => String(t).toLowerCase().includes(tagSearch.toLowerCase()) && !tags.split(',').map(x => x.trim()).includes(String(t)))
+                                                .filter(t => String(t).toLowerCase().includes(tagSearch.toLowerCase()) && !String(tags).split(',').map(x => x.trim()).includes(String(t)))
                                                 .map(tag => (
                                                     <button
                                                         key={tag}
@@ -233,7 +233,7 @@ export default function Editor({ initialData }: EditorProps) {
                                 </div>
                                 {/* Selected Tags Display */}
                                 <div className="mt-2 flex flex-wrap gap-1">
-                                    {tags.split(',').map(t => t.trim()).filter(t => t).map(tag => (
+                                    {String(tags).split(',').map(t => t.trim()).filter(t => t).map(tag => (
                                         <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
                                             {tag}
                                             <button
