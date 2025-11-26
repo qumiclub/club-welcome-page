@@ -12,20 +12,28 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { title, author, tags, content, sha, filename } = await req.json();
+        const { title, author, tags, content, sha, filename, published } = await req.json();
 
         if (!title || !content) {
             return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
         }
 
         // Create frontmatter
-        const fileContent = matter.stringify(content, {
+        const frontmatter: any = {
             layout: "article",
             title,
             author,
             tags,
             date: new Date().toISOString(), // Or just YYYY-MM-DD
-        });
+        };
+
+        // Only add published: false if explicitly set to false (Draft)
+        // If true or undefined, we omit it (defaults to true in Jekyll) or set to true
+        if (published === false) {
+            frontmatter.published = false;
+        }
+
+        const fileContent = matter.stringify(content, frontmatter);
 
         // Initialize Octokit
         const octokit = new Octokit({
