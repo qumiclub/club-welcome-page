@@ -112,6 +112,31 @@ export default function Editor({ initialData }: EditorProps) {
         }
     };
 
+    const [availableTags, setAvailableTags] = useState<string[]>([]);
+
+    React.useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const res = await fetch('/api/articles');
+                const data = await res.json();
+                if (data.tags) {
+                    setAvailableTags(data.tags);
+                }
+            } catch (error) {
+                console.error('Failed to fetch tags', error);
+            }
+        };
+        fetchTags();
+    }, []);
+
+    const addTag = (tag: string) => {
+        const currentTags = tags.split(',').map(t => t.trim()).filter(t => t);
+        if (!currentTags.includes(tag)) {
+            const newTags = [...currentTags, tag].join(', ');
+            setTags(newTags);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 p-4">
             <header className="flex justify-between items-center mb-6">
@@ -137,7 +162,7 @@ export default function Editor({ initialData }: EditorProps) {
                         <input
                             type="text"
                             placeholder="Article Title"
-                            className="w-full p-2 border rounded mb-2 text-lg font-semibold"
+                            className="w-full p-2 border rounded mb-2 text-lg font-semibold text-gray-900 bg-white"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
@@ -146,23 +171,39 @@ export default function Editor({ initialData }: EditorProps) {
                             <input
                                 type="text"
                                 placeholder="Author Name"
-                                className="flex-1 p-2 border rounded"
+                                className="flex-1 p-2 border rounded text-gray-900 bg-white"
                                 value={author}
                                 onChange={(e) => setAuthor(e.target.value)}
                                 required
                             />
-                            <input
-                                type="text"
-                                placeholder="Tags (comma separated)"
-                                className="flex-1 p-2 border rounded"
-                                value={tags}
-                                onChange={(e) => setTags(e.target.value)}
-                            />
+                            <div className="flex-1 flex flex-col">
+                                <input
+                                    type="text"
+                                    placeholder="Tags (comma separated)"
+                                    className="w-full p-2 border rounded text-gray-900 bg-white"
+                                    value={tags}
+                                    onChange={(e) => setTags(e.target.value)}
+                                />
+                                {availableTags.length > 0 && (
+                                    <div className="mt-1 flex flex-wrap gap-1">
+                                        {availableTags.map(tag => (
+                                            <button
+                                                key={tag}
+                                                onClick={() => addTag(tag)}
+                                                className="text-xs px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                                                type="button"
+                                            >
+                                                {tag}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     <textarea
-                        className="flex-1 w-full p-4 border rounded shadow resize-none font-mono"
+                        className="flex-1 w-full p-4 border rounded shadow resize-none font-mono text-gray-900 bg-white"
                         placeholder="Write your markdown here... (Drag & Drop images supported)"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
@@ -205,8 +246,8 @@ export default function Editor({ initialData }: EditorProps) {
                 </div>
 
                 {/* Preview Column */}
-                <div className="bg-white p-6 rounded shadow overflow-y-auto prose max-w-none">
-                    <h1 className="mb-2">{title || 'Untitled'}</h1>
+                <div className="bg-white p-6 rounded shadow overflow-y-auto prose max-w-none text-gray-900">
+                    <h1 className="mb-2 text-gray-900">{title || 'Untitled'}</h1>
                     <div className="text-sm text-gray-500 mb-4">
                         {author && <span>By {author}</span>}
                         {tags && <span className="ml-4">Tags: {tags}</span>}
