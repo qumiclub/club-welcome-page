@@ -3,7 +3,6 @@
 import Editor from "@/components/Editor";
 import { use, useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
-import matter from "gray-matter";
 
 export default function EditPage({ params }: { params: Promise<{ filename: string }> }) {
     const { data: session } = useSession();
@@ -35,14 +34,11 @@ export default function EditPage({ params }: { params: Promise<{ filename: strin
                 throw new Error(data.error || "Failed to fetch article");
             }
 
-            // Parse frontmatter
-            const { data: frontmatter, content } = matter(data.content);
-
             setInitialData({
-                title: frontmatter.title || "",
-                author: frontmatter.author || "",
-                tags: Array.isArray(frontmatter.tags) ? frontmatter.tags.join(", ") : String(frontmatter.tags || ""),
-                content: content,
+                title: data.title || "",
+                author: data.author || "",
+                tags: Array.isArray(data.tags) ? data.tags.join(", ") : String(data.tags || ""),
+                content: data.content,
                 sha: data.sha,
                 filename: filename,
             });
