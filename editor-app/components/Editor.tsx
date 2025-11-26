@@ -30,10 +30,10 @@ export default function Editor({ initialData }: EditorProps) {
 
 
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent, published: boolean = true) => {
         e.preventDefault();
 
-        if (!confirm('Are you sure you want to publish this article?')) {
+        if (!confirm(`Are you sure you want to ${published ? 'publish' : 'save as draft'} this article?`)) {
             return;
         }
 
@@ -53,6 +53,7 @@ export default function Editor({ initialData }: EditorProps) {
                     content,
                     sha: initialData?.sha,
                     filename: initialData?.filename,
+                    published,
                 }),
             });
 
@@ -62,7 +63,7 @@ export default function Editor({ initialData }: EditorProps) {
                 throw new Error(data.error || 'Failed to publish');
             }
 
-            setMessage('Successfully published! It may take a few minutes to appear on the site.');
+            setMessage(`Successfully ${published ? 'published' : 'saved as draft'}! It may take a few minutes to appear on the site.`);
             // Disable further submissions for this session to prevent duplicates
             // Optionally reset form here if you want to allow new posts
         } catch (error: any) {
@@ -280,16 +281,28 @@ export default function Editor({ initialData }: EditorProps) {
                         onDragOver={(e) => e.preventDefault()}
                     />
 
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isSubmitting || isUploadingImage || !title || !content}
-                        className={`w-full py-3 rounded font-bold text-white ${isSubmitting || isUploadingImage || !title || !content
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-green-600 hover:bg-green-700'
-                            }`}
-                    >
-                        {isSubmitting ? 'Publishing...' : 'Publish Article'}
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={(e) => handleSubmit(e, false)}
+                            disabled={isSubmitting || isUploadingImage || !title || !content}
+                            className={`flex-1 py-3 rounded font-bold text-gray-700 border border-gray-300 ${isSubmitting || isUploadingImage || !title || !content
+                                ? 'bg-gray-100 cursor-not-allowed'
+                                : 'bg-white hover:bg-gray-50'
+                                }`}
+                        >
+                            {isSubmitting ? 'Saving...' : 'Save as Draft'}
+                        </button>
+                        <button
+                            onClick={(e) => handleSubmit(e, true)}
+                            disabled={isSubmitting || isUploadingImage || !title || !content}
+                            className={`flex-1 py-3 rounded font-bold text-white ${isSubmitting || isUploadingImage || !title || !content
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-green-600 hover:bg-green-700'
+                                }`}
+                        >
+                            {isSubmitting ? 'Publishing...' : 'Publish Article'}
+                        </button>
+                    </div>
 
                     {message && (
                         <div className={`p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
