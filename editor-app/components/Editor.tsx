@@ -114,21 +114,29 @@ export default function Editor({ initialData }: EditorProps) {
     };
 
     const [availableTags, setAvailableTags] = useState<string[]>([]);
+    const [availableAuthors, setAvailableAuthors] = useState<string[]>([]);
+    const [tagSearch, setTagSearch] = useState('');
 
     React.useEffect(() => {
         const fetchTags = async () => {
             try {
                 const res = await fetch('/api/articles');
+                if (!res.ok) return; // Prevent crash if API fails
                 const data = await res.json();
-                if (data.tags) {
+                if (data.tags && Array.isArray(data.tags)) {
                     setAvailableTags(data.tags);
                 }
+                if (data.authors && Array.isArray(data.authors)) {
+                    setAvailableAuthors(data.authors);
+                }
             } catch (error) {
-                console.error('Failed to fetch tags', error);
+                console.error('Failed to fetch tags/authors', error);
             }
         };
-        fetchTags();
-    }, []);
+        if (session) {
+            fetchTags();
+        }
+    }, [session]);
 
     const addTag = (tag: string) => {
         const currentTags = tags.split(',').map(t => t.trim()).filter(t => t);
@@ -136,6 +144,7 @@ export default function Editor({ initialData }: EditorProps) {
             const newTags = [...currentTags, tag].join(', ');
             setTags(newTags);
         }
+        setTagSearch(''); // Clear search after adding
     };
 
     return (
@@ -169,36 +178,77 @@ export default function Editor({ initialData }: EditorProps) {
                             required
                         />
                         <div className="flex gap-2 mb-2 items-start">
-                            <input
-                                type="text"
-                                placeholder="Author Name"
-                                className="flex-1 p-2 border rounded text-gray-900 bg-white"
-                                value={author}
-                                onChange={(e) => setAuthor(e.target.value)}
-                                required
-                            />
-                            <div className="flex-1 flex flex-col">
+                            <div className="flex-1">
                                 <input
                                     type="text"
-                                    placeholder="Tags (comma separated)"
+                                    placeholder="Author Name"
                                     className="w-full p-2 border rounded text-gray-900 bg-white"
-                                    value={tags}
-                                    onChange={(e) => setTags(e.target.value)}
+                                    value={author}
+                                    onChange={(e) => setAuthor(e.target.value)}
+                                    required
+                                    list="authors-list"
                                 />
-                                {availableTags.length > 0 && (
-                                    <div className="mt-1 flex flex-wrap gap-1">
-                                        {availableTags.map(tag => (
+                                <datalist id="authors-list">
+                                    {availableAuthors.map(a => (
+                                        <option key={a} value={a} />
+                                    ))}
+                                </datalist>
+                            </div>
+                            <div className="flex-1 flex flex-col">
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Search & Add Tags..."
+                                        className="w-full p-2 border rounded text-gray-900 bg-white"
+                                        value={tagSearch}
+                                        onChange={(e) => setTagSearch(e.target.value)}
+                                    />
+                                    {/* Tag Suggestions Dropdown */}
+                                    {tagSearch && (
+                                        <div className="absolute z-10 w-full bg-white border rounded shadow-lg max-h-40 overflow-y-auto mt-1">
+                                            {availableTags
+                                                .filter(t => t.toLowerCase().includes(tagSearch.toLowerCase()) && !tags.split(',').map(x => x.trim()).includes(t))
+                                                .map(tag => (
+                                                    <button
+                                                        key={tag}
+                                                        onClick={() => addTag(tag)}
+                                                        className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-gray-800"
+                                                        type="button"
+                                                    >
+                                                        {tag}
+                                                    </button>
+                                                ))}
+                                            {/* Option to add new tag if it doesn't exist */}
+                                            {!availableTags.some(t => t.toLowerCase() === tagSearch.toLowerCase()) && (
+                                                <button
+                                                    onClick={() => addTag(tagSearch)}
+                                                    className="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-blue-600 font-semibold"
+                                                    type="button"
+                                                >
+                                                    Add new: "{tagSearch}"
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Selected Tags Display */}
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                    {tags.split(',').map(t => t.trim()).filter(t => t).map(tag => (
+                                        <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            {tag}
                                             <button
-                                                key={tag}
-                                                onClick={() => addTag(tag)}
-                                                className="text-xs px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
                                                 type="button"
+                                                onClick={() => {
+                                                    const newTags = tags.split(',').map(t => t.trim()).filter(t => t !== tag).join(', ');
+                                                    setTags(newTags);
+                                                }}
+                                                className="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none"
                                             >
-                                                {tag}
+                                                ×
                                             </button>
-                                        ))}
-                                    </div>
-                                )}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
