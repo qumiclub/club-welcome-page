@@ -28,19 +28,7 @@ export default function Editor({ initialData }: EditorProps) {
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [message, setMessage] = useState('');
 
-    if (!session) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <p className="mb-4">Please sign in to access the editor.</p>
-                <button
-                    onClick={() => signIn()}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                    Sign In
-                </button>
-            </div>
-        );
-    }
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -146,6 +134,20 @@ export default function Editor({ initialData }: EditorProps) {
         }
         setTagSearch(''); // Clear search after adding
     };
+
+    if (!session) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <p className="mb-4">Please sign in to access the editor.</p>
+                <button
+                    onClick={() => signIn()}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Sign In
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 p-4">
