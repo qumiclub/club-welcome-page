@@ -1,6 +1,5 @@
-"use client";
-
-import Editor from "@/components/Editor";
+import dynamic from "next/dynamic";
+const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 import { use, useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 
