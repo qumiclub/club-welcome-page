@@ -34,9 +34,10 @@ export async function GET() {
             return NextResponse.json({ articles: [] });
         }
 
-        // Filter for markdown files and extract tags
+        // Filter for markdown files and extract tags and authors
         const articles = [];
         const allTags = new Set<string>();
+        const allAuthors = new Set<string>();
 
         for (const file of data) {
             if (file.name.endsWith(".md")) {
@@ -59,6 +60,10 @@ export async function GET() {
                             tags.forEach((tag: string) => allTags.add(tag));
                         }
 
+                        if (frontmatter.author) {
+                            allAuthors.add(frontmatter.author);
+                        }
+
                         articles.push({
                             name: file.name,
                             path: file.path,
@@ -66,7 +71,8 @@ export async function GET() {
                             download_url: file.download_url,
                             // Include frontmatter data if needed for listing
                             title: frontmatter.title,
-                            tags: frontmatter.tags
+                            tags: frontmatter.tags,
+                            author: frontmatter.author
                         });
                     } else {
                         articles.push({
@@ -91,7 +97,11 @@ export async function GET() {
 
         articles.reverse(); // Newest first
 
-        return NextResponse.json({ articles, tags: Array.from(allTags) });
+        return NextResponse.json({
+            articles,
+            tags: Array.from(allTags),
+            authors: Array.from(allAuthors)
+        });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json({ error: error.message }, { status: 500 });
