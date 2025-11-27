@@ -40,14 +40,17 @@ export async function GET() {
         // Fetch all contents in parallel
         const articles = await Promise.all(markdownFiles.map(async (file) => {
             try {
+                const decodedName = decodeURIComponent(file.name);
+                const decodedPath = decodeURIComponent(file.path);
+
                 if (file.download_url) {
                     const contentRes = await fetch(file.download_url);
                     const contentText = await contentRes.text();
                     const { data: frontmatter } = matter(contentText);
 
                     return {
-                        name: file.name,
-                        path: file.path,
+                        name: decodedName,
+                        path: decodedPath,
                         sha: file.sha,
                         download_url: file.download_url,
                         title: frontmatter.title,
@@ -59,16 +62,16 @@ export async function GET() {
                     };
                 }
                 return {
-                    name: file.name,
-                    path: file.path,
+                    name: decodedName,
+                    path: decodedPath,
                     sha: file.sha,
                     download_url: file.download_url,
                 };
             } catch (e) {
                 console.error(`Failed to fetch content for ${file.name}`, e);
                 return {
-                    name: file.name,
-                    path: file.path,
+                    name: decodeURIComponent(file.name),
+                    path: decodeURIComponent(file.path),
                     sha: file.sha,
                     download_url: file.download_url,
                 };
