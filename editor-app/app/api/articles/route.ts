@@ -74,7 +74,8 @@ export async function GET() {
                             // Include frontmatter data if needed for listing
                             title: frontmatter.title,
                             tags: frontmatter.tags,
-                            author: frontmatter.author
+                            author: frontmatter.author,
+                            published: frontmatter.published !== false // Default to true if undefined
                         });
                     } else {
                         articles.push({
