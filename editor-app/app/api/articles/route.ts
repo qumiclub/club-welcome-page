@@ -34,71 +34,73 @@ export async function GET() {
             return NextResponse.json({ articles: [] });
         }
 
-        // Filter for markdown files and extract tags and authors
-        const articles = [];
-        const allTags = new Set<string>();
-        const allAuthors = new Set<string>();
+        // Filter for markdown files
+        const markdownFiles = data.filter(file => file.name.endsWith(".md"));
 
-        for (const file of data) {
-            if (file.name.endsWith(".md")) {
-                // Fetch file content to parse frontmatter
-                // Note: This might be slow if there are many files. 
-                // For a small club site, it's acceptable.
-                // We need to fetch content to get tags.
-                // Using download_url to fetch raw content
-                try {
-                    if (file.download_url) {
-                        const contentRes = await fetch(file.download_url);
-                        const contentText = await contentRes.text();
-                        const { data: frontmatter } = matter(contentText);
+        // Fetch all contents in parallel
+        const articles = await Promise.all(markdownFiles.map(async (file) => {
+            try {
+                if (file.download_url) {
+                    const contentRes = await fetch(file.download_url);
+                    const contentText = await contentRes.text();
+                    const { data: frontmatter } = matter(contentText);
 
-                        if (frontmatter.tags) {
-                            const tags = Array.isArray(frontmatter.tags)
-                                ? frontmatter.tags
-                                : String(frontmatter.tags).split(',').map(t => t.trim());
-
-                            tags.forEach((tag: any) => {
-                                if (tag) allTags.add(String(tag));
-                            });
-                        }
-
-                        if (frontmatter.author) {
-                            allAuthors.add(String(frontmatter.author));
-                        }
-
-                        articles.push({
-                            name: file.name,
-                            path: file.path,
-                            sha: file.sha,
-                            download_url: file.download_url,
-                            // Include frontmatter data if needed for listing
-                            title: frontmatter.title,
-                            tags: frontmatter.tags,
-                            author: frontmatter.author,
-                            published: frontmatter.published !== false // Default to true if undefined
-                        });
-                    } else {
-                        articles.push({
-                            name: file.name,
-                            path: file.path,
-                            sha: file.sha,
-                            download_url: file.download_url,
-                        });
-                    }
-                } catch (e) {
-                    console.error(`Failed to fetch content for ${file.name}`, e);
-                    // Still add the file even if parsing fails
-                    articles.push({
+                    return {
                         name: file.name,
                         path: file.path,
                         sha: file.sha,
                         download_url: file.download_url,
-                    });
+                        title: frontmatter.title,
+                        tags: frontmatter.tags,
+                        author: frontmatter.author,
+                        date: frontmatter.date,
+                        thumbnail: frontmatter.thumbnail,
+                        published: frontmatter.published !== false
+                    };
                 }
+                return {
+                    name: file.name,
+                    path: file.path,
+                    sha: file.sha,
+                    download_url: file.download_url,
+                };
+            } catch (e) {
+                console.error(`Failed to fetch content for ${file.name}`, e);
+                return {
+                    name: file.name,
+                    path: file.path,
+                    sha: file.sha,
+                    download_url: file.download_url,
+                };
             }
-        }
+        }));
 
-        articles.reverse(); // Newest first
+        // Extract all unique tags and authors
+        const allTags = new Set<string>();
+        const allAuthors = new Set<string>();
+
+        articles.forEach((article: any) => {
+            if (article.tags) {
+                const tags = Array.isArray(article.tags)
+                    ? article.tags
+                    : String(article.tags).split(',').map(t => t.trim());
+
+                tags.forEach((tag: any) => {
+                    if (tag) allTags.add(String(tag));
+                });
+            }
+            if (article.author) {
+                allAuthors.add(String(article.author));
+            }
+        });
+
+        // Sort by date (newest first) or filename if date is missing
+        articles.sort((a: any, b: any) => {
+            const dateA = a.date ? new Date(a.date).getTime() : 0;
+            const dateB = b.date ? new Date(b.date).getTime() : 0;
+            if (dateA !== dateB) return dateB - dateA;
+            return b.name.localeCompare(a.name);
+        });
 
         return NextResponse.json({
             articles,

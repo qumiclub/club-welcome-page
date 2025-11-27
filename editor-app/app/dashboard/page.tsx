@@ -18,6 +18,9 @@ export default function Dashboard() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         if (session) {
@@ -64,6 +67,16 @@ export default function Dashboard() {
         }
     };
 
+    const filteredArticles = articles.filter(article =>
+        article.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
+    const paginatedArticles = filteredArticles.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
     if (!session) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
@@ -92,6 +105,19 @@ export default function Dashboard() {
                     </Link>
                 </header>
 
+                <div className="mb-6">
+                    <input
+                        type="text"
+                        placeholder="Search articles..."
+                        className="w-full p-3 border rounded shadow-sm text-gray-700"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setCurrentPage(1); // Reset to first page on search
+                        }}
+                    />
+                </div>
+
                 {loading ? (
                     <p>Loading articles...</p>
                 ) : error ? (
@@ -106,7 +132,7 @@ export default function Dashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {articles.map((article) => (
+                                {paginatedArticles.map((article) => (
                                     <tr key={article.sha} className="border-b last:border-0 hover:bg-gray-50">
                                         <td className="p-4 text-gray-800 break-all">
                                             <div className="flex items-center gap-2 flex-wrap">
@@ -138,15 +164,38 @@ export default function Dashboard() {
                                         </td>
                                     </tr>
                                 ))}
-                                {articles.length === 0 && (
+                                {paginatedArticles.length === 0 && (
                                     <tr>
                                         <td colSpan={2} className="p-8 text-center text-gray-500">
-                                            No articles found. Create one!
+                                            {searchQuery ? 'No articles match your search.' : 'No articles found. Create one!'}
                                         </td>
                                     </tr>
                                 )}
                             </tbody>
                         </table>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-4 p-4 border-t bg-gray-50">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-3 py-1 border rounded bg-white disabled:opacity-50 text-gray-700"
+                                >
+                                    Previous
+                                </button>
+                                <span className="text-gray-600">
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-3 py-1 border rounded bg-white disabled:opacity-50 text-gray-700"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
