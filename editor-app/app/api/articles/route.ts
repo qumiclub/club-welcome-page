@@ -4,7 +4,9 @@ import { Octokit } from "@octokit/rest";
 import { NextResponse } from "next/server";
 import matter from "gray-matter";
 
-export async function GET() {
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
