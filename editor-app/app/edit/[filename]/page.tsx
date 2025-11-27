@@ -7,7 +7,8 @@ import { useSession, signIn } from "next-auth/react";
 
 export default function EditPage({ params }: { params: Promise<{ filename: string }> }) {
     const { data: session } = useSession();
-    const { filename } = use(params);
+    const { filename: rawFilename } = use(params);
+    const filename = decodeURIComponent(rawFilename);
 
     const [initialData, setInitialData] = useState<{
         title: string;

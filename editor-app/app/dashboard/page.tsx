@@ -121,17 +121,19 @@ export default function Dashboard() {
                                         <td className="p-4 flex justify-end gap-3">
                                             <Link
                                                 href={`/edit/${article.name}`}
-                                                className="text-blue-600 hover:text-blue-800"
+                                                className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
                                                 title="Edit"
                                             >
-                                                <Edit size={20} />
+                                                <Edit size={18} />
+                                                <span className="hidden sm:inline">Edit</span>
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(article.name, article.sha)}
-                                                className="text-red-600 hover:text-red-800"
+                                                className="flex items-center gap-1 text-red-600 hover:text-red-800"
                                                 title="Delete"
                                             >
-                                                <Trash2 size={20} />
+                                                <Trash2 size={18} />
+                                                <span className="hidden sm:inline">Delete</span>
                                             </button>
                                         </td>
                                     </tr>
