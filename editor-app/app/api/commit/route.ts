@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { title, author, tags, content, sha, filename, published } = await req.json();
+        const { title, author, tags, content, sha, filename, published, date, thumbnail } = await req.json();
 
         if (!title || !content) {
             return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
@@ -24,8 +24,12 @@ export async function POST(req: Request) {
             title,
             author,
             tags,
-            date: new Date().toISOString(), // Or just YYYY-MM-DD
+            date: date || new Date().toISOString(),
         };
+
+        if (thumbnail) {
+            frontmatter.thumbnail = thumbnail;
+        }
 
         // Only add published: false if explicitly set to false (Draft)
         // If true or undefined, we omit it (defaults to true in Jekyll) or set to true

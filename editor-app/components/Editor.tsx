@@ -15,6 +15,8 @@ interface EditorProps {
         content: string;
         sha?: string;
         filename?: string;
+        date?: string;
+        thumbnail?: string;
     } | null;
 }
 
@@ -24,6 +26,11 @@ export default function Editor({ initialData }: EditorProps) {
     const [author, setAuthor] = useState(initialData?.author || '');
     const [tags, setTags] = useState(initialData?.tags || '');
     const [content, setContent] = useState(initialData?.content || '');
+    const [date, setDate] = useState(initialData?.date || new Date().toISOString().split('T')[0]);
+    const [thumbnail, setThumbnail] = useState(initialData?.thumbnail || '');
+    const [showImageManager, setShowImageManager] = useState(false);
+    const [images, setImages] = useState<any[]>([]);
+    const [imageManagerMode, setImageManagerMode] = useState<'insert' | 'thumbnail'>('insert');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [message, setMessage] = useState('');
@@ -54,6 +61,8 @@ export default function Editor({ initialData }: EditorProps) {
                     sha: initialData?.sha,
                     filename: initialData?.filename,
                     published,
+                    date,
+                    thumbnail,
                 }),
             });
 
@@ -122,8 +131,23 @@ export default function Editor({ initialData }: EditorProps) {
                 console.error('Failed to fetch tags/authors', error);
             }
         };
+
+        const fetchImages = async () => {
+            try {
+                const res = await fetch('/api/images');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.images && Array.isArray(data.images)) {
+                    setImages(data.images);
+                }
+            } catch (error) {
+                console.error('Failed to fetch images', error);
+            }
+        };
+
         if (session) {
             fetchTags();
+            fetchImages();
         }
     }, [session]);
 
@@ -134,6 +158,16 @@ export default function Editor({ initialData }: EditorProps) {
             setTags(newTags);
         }
         setTagSearch(''); // Clear search after adding
+    };
+
+    const handleImageSelect = (image: any) => {
+        if (imageManagerMode === 'insert') {
+            const imageMarkdown = `![${image.name}]({{ site.baseurl }}${image.url})`;
+            setContent(prev => prev + '\n' + imageMarkdown + '\n');
+        } else {
+            setThumbnail(image.url);
+        }
+        setShowImageManager(false);
     };
 
     if (!session) {
@@ -155,6 +189,15 @@ export default function Editor({ initialData }: EditorProps) {
             <header className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Club Article Editor</h1>
                 <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => {
+                            setImageManagerMode('insert');
+                            setShowImageManager(true);
+                        }}
+                        className="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm font-semibold"
+                    >
+                        Image Manager
+                    </button>
                     <a href="/dashboard" className="text-blue-600 hover:text-blue-800 font-semibold">
                         Dashboard
                     </a>
@@ -255,109 +298,195 @@ export default function Editor({ initialData }: EditorProps) {
                             </div>
                         </div>
                     </div>
-
-                    <textarea
-                        className="flex-1 w-full p-4 border rounded shadow resize-none font-mono text-gray-900 bg-white"
-                        placeholder="Write your markdown here... (Drag & Drop images supported)"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        onPaste={async (e) => {
-                            const items = e.clipboardData.items;
-                            for (const item of items) {
-                                if (item.type.indexOf('image') !== -1) {
-                                    e.preventDefault();
-                                    const file = item.getAsFile();
-                                    if (file) await uploadImage(file);
-                                }
-                            }
-                        }}
-                        onDrop={async (e) => {
-                            e.preventDefault();
-                            const files = e.dataTransfer.files;
-                            if (files.length > 0 && files[0].type.startsWith('image/')) {
-                                await uploadImage(files[0]);
-                            }
-                        }}
-                        onDragOver={(e) => e.preventDefault()}
-                    />
-
-                    <div className="flex gap-2">
-                        <button
-                            onClick={(e) => handleSubmit(e, false)}
-                            disabled={isSubmitting || isUploadingImage || !title || !content}
-                            className={`flex-1 py-3 rounded font-bold text-gray-700 border border-gray-300 ${isSubmitting || isUploadingImage || !title || !content
-                                ? 'bg-gray-100 cursor-not-allowed'
-                                : 'bg-white hover:bg-gray-50'
-                                }`}
-                        >
-                            {isSubmitting ? 'Saving...' : 'Save as Draft'}
-                        </button>
-                        <button
-                            onClick={(e) => handleSubmit(e, true)}
-                            disabled={isSubmitting || isUploadingImage || !title || !content}
-                            className={`flex-1 py-3 rounded font-bold text-white ${isSubmitting || isUploadingImage || !title || !content
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-green-600 hover:bg-green-700'
-                                }`}
-                        >
-                            {isSubmitting ? 'Publishing...' : 'Publish Article'}
-                        </button>
-                    </div>
-
-                    {message && (
-                        <div className={`p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                            {message}
+                    <div className="flex gap-2 mb-2">
+                        <div className="flex-1">
+                            <label className="block text-xs font-semibold text-gray-500 mb-1">Date</label>
+                            <input
+                                type="date"
+                                className="w-full p-2 border rounded text-gray-900 bg-white"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                            />
                         </div>
-                    )}
+                        <div className="flex-[2]">
+                            <label className="block text-xs font-semibold text-gray-500 mb-1">Thumbnail URL (or select from Image Manager)</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="/assets/images/..."
+                                    className="w-full p-2 border rounded text-gray-900 bg-white"
+                                    value={thumbnail}
+                                    onChange={(e) => setThumbnail(e.target.value)}
+                                />
+                                <button
+                                    onClick={() => {
+                                        setImageManagerMode('thumbnail');
+                                        setShowImageManager(true);
+                                    }}
+                                    className="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                                >
+                                    Select
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Preview Column */}
-                <div className="bg-white p-6 rounded shadow overflow-y-auto prose max-w-none text-gray-900">
-                    <h1 className="mb-2 text-gray-900">{title || 'Untitled'}</h1>
-                    <div className="text-sm text-gray-500 mb-4">
-                        {author && <span>By {author}</span>}
-                        {tags && <span className="ml-4">Tags: {tags}</span>}
-                    </div>
-                    <hr className="my-4" />
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            code({ node, inline, className, children, ...props }: any) {
-                                const match = /language-(\w+)/.exec(className || '')
-                                return !inline && match ? (
-                                    <SyntaxHighlighter
-                                        style={vscDarkPlus}
-                                        language={match[1]}
-                                        PreTag="div"
-                                        {...props}
-                                    >
-                                        {String(children).replace(/\n$/, '')}
-                                    </SyntaxHighlighter>
-                                ) : (
-                                    <code className={className} {...props}>
-                                        {children}
-                                    </code>
-                                )
-                            },
-                            img: ({ node, ...props }) => {
-                                let src = (props.src as string) || '';
-                                // Handle Jekyll baseurl
-                                if (src.includes('{{ site.baseurl }}')) {
-                                    src = src.replace('{{ site.baseurl }}', '');
-                                }
-                                if (src.startsWith('/assets/images/')) {
-                                    // Rewrite relative path to GitHub Raw URL for preview
-                                    // Using qumiclub as the owner since images are uploaded there
-                                    src = `https://raw.githubusercontent.com/qumiclub/club-welcome-page/main${src}`;
-                                }
-                                return <img {...props} src={src} style={{ maxWidth: '100%' }} />;
+                <textarea
+                    className="flex-1 w-full p-4 border rounded shadow resize-none font-mono text-gray-900 bg-white"
+                    placeholder="Write your markdown here... (Drag & Drop images supported)"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    onPaste={async (e) => {
+                        const items = e.clipboardData.items;
+                        for (const item of items) {
+                            if (item.type.indexOf('image') !== -1) {
+                                e.preventDefault();
+                                const file = item.getAsFile();
+                                if (file) await uploadImage(file);
                             }
-                        }}
+                        }
+                    }}
+                    onDrop={async (e) => {
+                        e.preventDefault();
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0 && files[0].type.startsWith('image/')) {
+                            await uploadImage(files[0]);
+                        }
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
+                />
+
+                <div className="flex gap-2">
+                    <button
+                        onClick={(e) => handleSubmit(e, false)}
+                        disabled={isSubmitting || isUploadingImage || !title || !content}
+                        className={`flex-1 py-3 rounded font-bold text-gray-700 border border-gray-300 ${isSubmitting || isUploadingImage || !title || !content
+                            ? 'bg-gray-100 cursor-not-allowed'
+                            : 'bg-white hover:bg-gray-50'
+                            }`}
                     >
-                        {content}
-                    </ReactMarkdown>
+                        {isSubmitting ? 'Saving...' : 'Save as Draft'}
+                    </button>
+                    <button
+                        onClick={(e) => handleSubmit(e, true)}
+                        disabled={isSubmitting || isUploadingImage || !title || !content}
+                        className={`flex-1 py-3 rounded font-bold text-white ${isSubmitting || isUploadingImage || !title || !content
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-green-600 hover:bg-green-700'
+                            }`}
+                    >
+                        {isSubmitting ? 'Publishing...' : 'Publish Article'}
+                    </button>
                 </div>
+
+                {message && (
+                    <div className={`p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                        {message}
+                    </div>
+                )}
+            </div>
+
+            {/* Preview Column */}
+            <div className="bg-white p-6 rounded shadow overflow-y-auto prose max-w-none text-gray-900">
+                <h1 className="mb-2 text-gray-900">{title || 'Untitled'}</h1>
+                <div className="text-sm text-gray-500 mb-4">
+                    {author && <span>By {author}</span>}
+                    {tags && <span className="ml-4">Tags: {tags}</span>}
+                </div>
+                <hr className="my-4" />
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                        code({ node, inline, className, children, ...props }: any) {
+                            const match = /language-(\w+)/.exec(className || '')
+                            return !inline && match ? (
+                                <SyntaxHighlighter
+                                    style={vscDarkPlus}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    {...props}
+                                >
+                                    {String(children).replace(/\n$/, '')}
+                                </SyntaxHighlighter>
+                            ) : (
+                                <code className={className} {...props}>
+                                    {children}
+                                </code>
+                            )
+                        },
+                        img: ({ node, ...props }) => {
+                            let src = (props.src as string) || '';
+                            // Handle Jekyll baseurl
+                            if (src.includes('{{ site.baseurl }}')) {
+                                src = src.replace('{{ site.baseurl }}', '');
+                            }
+                            if (src.startsWith('/assets/images/')) {
+                                // Rewrite relative path to GitHub Raw URL for preview
+                                // Using qumiclub as the owner since images are uploaded there
+                                src = `https://raw.githubusercontent.com/qumiclub/club-welcome-page/main${src}`;
+                            }
+                            return <img {...props} src={src} style={{ maxWidth: '100%' }} />;
+                        }
+                    }}
+                >
+                    {content}
+                </ReactMarkdown>
             </div>
         </div>
+
+
+        {/* Image Manager Modal */ }
+    {
+        showImageManager && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold text-gray-800">Image Manager ({imageManagerMode === 'insert' ? 'Insert to Content' : 'Select Thumbnail'})</h2>
+                        <button onClick={() => setShowImageManager(false)} className="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Upload New Image</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                                if (e.target.files?.[0]) {
+                                    await uploadImage(e.target.files[0]);
+                                    // Refresh images list
+                                    const res = await fetch('/api/images');
+                                    if (res.ok) {
+                                        const data = await res.json();
+                                        setImages(data.images);
+                                    }
+                                }
+                            }}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto grid grid-cols-2 md:grid-cols-4 gap-4 p-2 border rounded">
+                        {images.map((img) => (
+                            <div
+                                key={img.path}
+                                className="border rounded p-2 hover:bg-blue-50 cursor-pointer flex flex-col items-center"
+                                onClick={() => handleImageSelect(img)}
+                            >
+                                <div className="h-32 w-full flex items-center justify-center bg-gray-100 mb-2 overflow-hidden">
+                                    <img src={img.download_url} alt={img.name} className="max-h-full max-w-full object-contain" />
+                                </div>
+                                <p className="text-xs text-center truncate w-full" title={img.name}>{img.name}</p>
+                            </div>
+                        ))}
+                        {images.length === 0 && (
+                            <div className="col-span-full text-center py-8 text-gray-500">No images found. Upload one!</div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+        </div >
     );
 }
