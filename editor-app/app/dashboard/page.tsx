@@ -10,6 +10,7 @@ interface Article {
     path: string;
     sha: string;
     download_url: string;
+    published?: boolean;
 }
 
 export default function Dashboard() {
@@ -107,7 +108,16 @@ export default function Dashboard() {
                             <tbody>
                                 {articles.map((article) => (
                                     <tr key={article.sha} className="border-b last:border-0 hover:bg-gray-50">
-                                        <td className="p-4 text-gray-800">{article.name}</td>
+                                        <td className="p-4 text-gray-800">
+                                            <div className="flex items-center gap-2">
+                                                {article.name}
+                                                {article.published === false && (
+                                                    <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">
+                                                        Draft
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
                                         <td className="p-4 flex justify-end gap-3">
                                             <Link
                                                 href={`/edit/${article.name}`}
