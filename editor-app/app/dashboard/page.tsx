@@ -102,17 +102,17 @@ export default function Dashboard() {
                             <thead>
                                 <tr className="bg-gray-100 border-b">
                                     <th className="p-4 font-semibold text-gray-600">Article Name</th>
-                                    <th className="p-4 font-semibold text-gray-600 text-right">Actions</th>
+                                    <th className="p-4 font-semibold text-gray-600 text-right w-48">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {articles.map((article) => (
                                     <tr key={article.sha} className="border-b last:border-0 hover:bg-gray-50">
-                                        <td className="p-4 text-gray-800">
-                                            <div className="flex items-center gap-2">
+                                        <td className="p-4 text-gray-800 break-all">
+                                            <div className="flex items-center gap-2 flex-wrap">
                                                 {article.name}
                                                 {article.published === false && (
-                                                    <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">
+                                                    <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full whitespace-nowrap">
                                                         Draft
                                                     </span>
                                                 )}
