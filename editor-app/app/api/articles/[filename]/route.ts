@@ -13,6 +13,7 @@ export async function GET(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { filename } = await params;
+    const decodedFilename = decodeURIComponent(filename);
 
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
     const owner = process.env.GITHUB_OWNER;
@@ -24,7 +25,7 @@ export async function GET(
         const { data } = await octokit.repos.getContent({
             owner,
             repo,
-            path: `_posts/${filename}`,
+            path: `_posts/${decodedFilename}`,
         });
 
         if (Array.isArray(data) || !('content' in data)) {
@@ -54,6 +55,7 @@ export async function DELETE(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { filename } = await params;
+    const decodedFilename = decodeURIComponent(filename);
     const { sha } = await req.json(); // Need SHA to delete
 
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -66,8 +68,8 @@ export async function DELETE(
         await octokit.repos.deleteFile({
             owner,
             repo,
-            path: `_posts/${filename}`,
-            message: `Delete article ${filename} by ${session.user?.email}`,
+            path: `_posts/${decodedFilename}`,
+            message: `Delete article ${decodedFilename} by ${session.user?.email}`,
             sha,
             committer: {
                 name: session.user?.name || "Editor App",

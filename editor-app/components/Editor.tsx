@@ -435,7 +435,6 @@ export default function Editor({ initialData }: EditorProps) {
             </div>
         </div>
 
-
         {/* Image Manager Modal */ }
     {
         showImageManager && (
@@ -487,6 +486,6 @@ export default function Editor({ initialData }: EditorProps) {
             </div>
         )
     }
-        </div >
+    </div >
     );
 }
