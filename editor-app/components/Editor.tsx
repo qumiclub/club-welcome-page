@@ -430,7 +430,7 @@ export default function Editor({ initialData }: EditorProps) {
                             }
                         }}
                     >
-                        {content}
+                        {content.replace(/\{\{\s*site\.baseurl\s*\}\}/g, '')}
                     </ReactMarkdown>
                 </div>
             </div>
