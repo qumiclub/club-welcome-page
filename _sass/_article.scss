@@ -13,6 +13,7 @@
 .main-content h2,
 .main-content h3 {
   border-bottom: 1px solid #b1b1b1; /* 下線を引く */
+  scroll-margin-top: calc(var(--header-height, 70px) + 10px); /* ToC からのアンカーリンク移動時にヘッダーと重ならないようにする */
 }
 
 .sub-content {
