@@ -64,7 +64,7 @@ export async function POST(req: Request) {
         }
 
         // Commit to GitHub
-        await octokit.repos.createOrUpdateFileContents({
+        const response = await octokit.repos.createOrUpdateFileContents({
             owner,
             repo,
             path,
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
             },
         });
 
-        return NextResponse.json({ success: true, path });
+        return NextResponse.json({ success: true, path, sha: response.data.content?.sha });
     } catch (error: any) {
         console.error(error);
         return NextResponse.json({ error: error.message }, { status: 500 });

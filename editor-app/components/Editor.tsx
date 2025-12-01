@@ -36,6 +36,8 @@ export default function Editor({ initialData }: EditorProps) {
     const [imageManagerMode, setImageManagerMode] = useState<'insert' | 'thumbnail'>('insert');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [currentSha, setCurrentSha] = useState(initialData?.sha);
+    const [currentFilename, setCurrentFilename] = useState(initialData?.filename);
     const [message, setMessage] = useState('');
 
 
@@ -61,8 +63,8 @@ export default function Editor({ initialData }: EditorProps) {
                     author,
                     tags: tags.split(',').map(t => t.trim()).filter(t => t),
                     content,
-                    sha: initialData?.sha,
-                    filename: initialData?.filename,
+                    sha: currentSha,
+                    filename: currentFilename,
                     published,
                     date,
                     thumbnail,
@@ -73,6 +75,15 @@ export default function Editor({ initialData }: EditorProps) {
 
             if (!res.ok) {
                 throw new Error(data.error || 'Failed to publish');
+            }
+
+            // Update local state with new SHA and filename to prevent mismatch on next save
+            if (data.sha) {
+                setCurrentSha(data.sha);
+            }
+            if (data.path) {
+                // API returns full path like '_posts/filename.md', we need just 'filename.md'
+                setCurrentFilename(data.path.replace('_posts/', ''));
             }
 
             setMessage(`Successfully ${published ? 'published' : 'saved as draft'}! It may take a few minutes to appear on the site.`);
