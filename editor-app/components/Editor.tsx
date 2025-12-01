@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/cjs/prism';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useSession, signIn, signOut } from "next-auth/react";
@@ -73,6 +76,7 @@ export default function Editor({ initialData }: EditorProps) {
             }
 
             setMessage(`Successfully ${published ? 'published' : 'saved as draft'}! It may take a few minutes to appear on the site.`);
+            setIsSubmitting(false);
             // Disable further submissions for this session to prevent duplicates
             // Optionally reset form here if you want to allow new posts
         } catch (error: any) {
@@ -396,7 +400,8 @@ export default function Editor({ initialData }: EditorProps) {
                     </div>
                     <hr className="my-4" />
                     <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
                         components={{
                             code({ node, inline, className, children, ...props }: any) {
                                 const match = /language-(\w+)/.exec(className || '')

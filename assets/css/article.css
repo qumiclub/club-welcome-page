@@ -107,6 +107,14 @@
     margin: 0;
 }
 
+.table-of-content li.toc-h2 {
+    padding-left: 1rem;
+}
+
+.table-of-content li.toc-h3 {
+    padding-left: 2rem;
+}
+
 .table-of-content a {
     display: block;
     padding: 0.5rem 1rem;
@@ -133,8 +141,11 @@
 
 /* Markdown Content Styling */
 .main-content h1 {
-    display: none;
-    /* Hide h1 in content if it duplicates the title */
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .main-content h2 {
@@ -161,7 +172,15 @@
 .main-content ul,
 .main-content ol {
     margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
+    padding-left: 2rem;
+}
+
+.main-content ul {
+    list-style-type: disc;
+}
+
+.main-content ol {
+    list-style-type: decimal;
 }
 
 .main-content li {
