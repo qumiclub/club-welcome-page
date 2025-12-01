@@ -9,6 +9,7 @@ import 'katex/dist/katex.min.css';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/cjs/prism';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useSession, signIn, signOut } from "next-auth/react";
+import '../app/preview.css';
 
 interface EditorProps {
     initialData?: {
@@ -403,51 +404,59 @@ export default function Editor({ initialData }: EditorProps) {
                 </div>
 
                 {/* Preview Column */}
-                <div className="bg-white p-6 rounded shadow overflow-y-auto prose max-w-none text-gray-900">
-                    <h1 className="mb-2 text-gray-900">{title || 'Untitled'}</h1>
-                    <div className="text-sm text-gray-500 mb-4">
-                        {author && <span>By {author}</span>}
-                        {tags && <span className="ml-4">Tags: {tags}</span>}
+                <div className="bg-white p-6 rounded shadow overflow-y-auto preview-container">
+                    <h1 className="article-title">{title || 'Untitled'}</h1>
+                    <div className="article-meta">
+                        {author && <span className="author-info">By {author}</span>}
+                        {tags && (
+                            <div className="article-tags ml-4">
+                                {String(tags).split(',').map(t => t.trim()).filter(t => t).map(tag => (
+                                    <span key={tag} className="tag">{tag}</span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <hr className="my-4" />
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm, remarkMath]}
-                        rehypePlugins={[rehypeKatex]}
-                        components={{
-                            code({ node, inline, className, children, ...props }: any) {
-                                const match = /language-(\w+)/.exec(className || '')
-                                return !inline && match ? (
-                                    <SyntaxHighlighter
-                                        style={vscDarkPlus}
-                                        language={match[1]}
-                                        PreTag="div"
-                                        {...props}
-                                    >
-                                        {String(children).replace(/\n$/, '')}
-                                    </SyntaxHighlighter>
-                                ) : (
-                                    <code className={className} {...props}>
-                                        {children}
-                                    </code>
-                                )
-                            },
-                            img: ({ node, ...props }) => {
-                                let src = (props.src as string) || '';
-                                // Handle Jekyll baseurl
-                                if (src.includes('{{ site.baseurl }}')) {
-                                    src = src.replace('{{ site.baseurl }}', '');
+                    <div className="main-content">
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm, remarkMath]}
+                            rehypePlugins={[rehypeKatex]}
+                            components={{
+                                code({ node, inline, className, children, ...props }: any) {
+                                    const match = /language-(\w+)/.exec(className || '')
+                                    return !inline && match ? (
+                                        <SyntaxHighlighter
+                                            style={vscDarkPlus}
+                                            language={match[1]}
+                                            PreTag="div"
+                                            {...props}
+                                        >
+                                            {String(children).replace(/\n$/, '')}
+                                        </SyntaxHighlighter>
+                                    ) : (
+                                        <code className={className} {...props}>
+                                            {children}
+                                        </code>
+                                    )
+                                },
+                                img: ({ node, ...props }) => {
+                                    let src = (props.src as string) || '';
+                                    // Handle Jekyll baseurl
+                                    if (src.includes('{{ site.baseurl }}')) {
+                                        src = src.replace('{{ site.baseurl }}', '');
+                                    }
+                                    if (src.startsWith('/assets/images/')) {
+                                        // Rewrite relative path to GitHub Raw URL for preview
+                                        // Using qumiclub as the owner since images are uploaded there
+                                        src = `https://raw.githubusercontent.com/qumiclub/club-welcome-page/main${src}`;
+                                    }
+                                    return <img {...props} src={src} style={{ maxWidth: '100%' }} />;
                                 }
-                                if (src.startsWith('/assets/images/')) {
-                                    // Rewrite relative path to GitHub Raw URL for preview
-                                    // Using qumiclub as the owner since images are uploaded there
-                                    src = `https://raw.githubusercontent.com/qumiclub/club-welcome-page/main${src}`;
-                                }
-                                return <img {...props} src={src} style={{ maxWidth: '100%' }} />;
-                            }
-                        }}
-                    >
-                        {content.replace(/\{\{\s*site\.baseurl\s*\}\}/g, '')}
-                    </ReactMarkdown>
+                            }}
+                        >
+                            {content.replace(/\{\{\s*site\.baseurl\s*\}\}/g, '')}
+                        </ReactMarkdown>
+                    </div>
                 </div>
             </div>
 
