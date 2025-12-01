@@ -1,10 +1,11 @@
 ---
 layout: article
-title: "Markdown Features Test"
-author: "Test User"
-tags: [test, markdown]
-date: 2025-12-02
-published: true
+title: Markdown Features Test
+author: K. Hikaru
+tags:
+  - test
+  - markdown
+date: '2025-12-01'
 ---
 
 # Heading 1
