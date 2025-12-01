@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       const li = document.createElement('li');
+      li.classList.add('toc-' + heading.tagName.toLowerCase());
+
       const a = document.createElement('a');
       a.href = '#' + heading.id;
       a.textContent = heading.textContent;
