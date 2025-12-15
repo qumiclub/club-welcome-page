@@ -44,6 +44,11 @@ title: 九州大学医学部情報研 -部員紹介-
     <h3 class="member-name">西岡大翔</h3>
     <p class="member-bio">AIやプログラミングできると便利だなと思って入りました。音声に興味があるのでそちらでなんかできないかなと考えています。あとアークナイツ好きです。エンドフィールドも楽しみ。</p>
   </div>
+  <div class="member-card">
+    <div class="member-icon">矢</div>
+    <h3 class="member-name">矢野篤</h3>
+    <p class="member-bio">AIと競プロに興味があります。</p>
+  </div>
 </div>
 
 ## 2年生
@@ -57,6 +62,16 @@ title: 九州大学医学部情報研 -部員紹介-
     <div class="member-icon">山</div>
     <h3 class="member-name">山下真実徳</h3>
     <p class="member-bio">ディープラーニングの学習を始めたばかりですが、どんどん知識を蓄えていきたいです。</p>
+  </div>
+  <div class="member-card">
+    <div class="member-icon">小</div>
+    <h3 class="member-name">小野寛人</h3>
+    <p class="member-bio">初歩的な深層学習が使えるようになったので、これからコンペにも積極的に参加していこうと思っています。kaggleユーザーネームはhono6(＃._.)bです。よろしくお願いします！</p>
+  </div>
+  <div class="member-card">
+    <div class="member-icon">菅</div>
+    <h3 class="member-name">菅原浩人</h3>
+    <p class="member-bio">データ解析のスキルを身につけて、未来の医療を支える人材になりたいです。</p>
   </div>
 </div>
 
