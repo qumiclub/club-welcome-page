@@ -84,7 +84,13 @@ export default function Editor({ initialData }: EditorProps) {
             }
             if (data.path) {
                 // API returns full path like '_posts/filename.md', we need just 'filename.md'
-                setCurrentFilename(data.path.replace('_posts/', ''));
+                // decodeURIComponent で二重エンコードを防止
+                const rawFilename = data.path.replace('_posts/', '');
+                try {
+                    setCurrentFilename(decodeURIComponent(rawFilename));
+                } catch {
+                    setCurrentFilename(rawFilename);
+                }
             }
 
             setMessage(`Successfully ${published ? 'published' : 'saved as draft'}! It may take a few minutes to appear on the site.`);
