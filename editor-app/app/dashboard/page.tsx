@@ -124,43 +124,47 @@ export default function Dashboard() {
                     <p className="text-red-600">{error}</p>
                 ) : (
                     <div className="bg-white rounded shadow overflow-hidden">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse table-fixed">
                             <thead>
                                 <tr className="bg-gray-100 border-b">
                                     <th className="p-4 font-semibold text-gray-600">Article Name</th>
-                                    <th className="p-4 font-semibold text-gray-600 text-right w-48">Actions</th>
+                                    <th className="p-4 font-semibold text-gray-600 text-right" style={{ width: '140px' }}>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {paginatedArticles.map((article) => (
                                     <tr key={article.sha} className="border-b last:border-0 hover:bg-gray-50">
-                                        <td className="p-4 text-gray-800 break-all">
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                {article.name}
+                                        <td className="p-4 text-gray-800 overflow-hidden">
+                                            <div className="flex items-center gap-2">
+                                                <span className="truncate" title={article.name}>
+                                                    {article.name}
+                                                </span>
                                                 {article.published === false && (
-                                                    <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full whitespace-nowrap">
+                                                    <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full whitespace-nowrap flex-shrink-0">
                                                         Draft
                                                     </span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="p-4 flex justify-end gap-3">
-                                            <Link
-                                                href={`/edit/${article.name}`}
-                                                className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
-                                                title="Edit"
-                                            >
-                                                <Edit size={18} />
-                                                <span className="hidden sm:inline">Edit</span>
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(article.name, article.sha)}
-                                                className="flex items-center gap-1 text-red-600 hover:text-red-800"
-                                                title="Delete"
-                                            >
-                                                <Trash2 size={18} />
-                                                <span className="hidden sm:inline">Delete</span>
-                                            </button>
+                                        <td className="p-4" style={{ width: '140px' }}>
+                                            <div className="flex justify-end gap-3">
+                                                <Link
+                                                    href={`/edit/${encodeURIComponent(article.name)}`}
+                                                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
+                                                    title="Edit"
+                                                >
+                                                    <Edit size={18} />
+                                                    <span className="hidden sm:inline">Edit</span>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(article.name, article.sha)}
+                                                    className="flex items-center gap-1 text-red-600 hover:text-red-800"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size={18} />
+                                                    <span className="hidden sm:inline">Delete</span>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

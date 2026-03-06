@@ -63,7 +63,14 @@ export async function POST(req: Request) {
         let path = "";
         if (filename) {
             // Updating existing file
-            path = `_posts/${filename}`;
+            // デコードして二重エンコードを防止
+            let decodedFilename: string;
+            try {
+                decodedFilename = decodeURIComponent(filename);
+            } catch {
+                decodedFilename = filename;
+            }
+            path = `_posts/${decodedFilename}`;
         } else {
             // Creating new file
             const dateStr = new Date().toISOString().split('T')[0];
