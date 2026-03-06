@@ -447,8 +447,8 @@ export default function Editor({ initialData }: EditorProps) {
                                     }
                                     if (src.startsWith('/assets/images/')) {
                                         // Rewrite relative path to GitHub Raw URL for preview
-                                        // Using qumiclub as the owner since images are uploaded there
-                                        src = `https://raw.githubusercontent.com/qumiclub/club-welcome-page/main${src}`;
+                                        // Note: This will work as long as the repo structure is consistent
+                                        src = `https://raw.githubusercontent.com/${process.env.NEXT_PUBLIC_GITHUB_OWNER || 'qumiclub'}/${process.env.NEXT_PUBLIC_GITHUB_REPO || 'club-welcome-page'}/main${src}`;
                                     }
                                     return <img {...props} src={src} style={{ maxWidth: '100%' }} />;
                                 }

@@ -7,10 +7,20 @@ document.addEventListener('DOMContentLoaded', function () {
     toc.appendChild(ul);
 
     const tocLinks = [];
+    // セキュリティ/バグ修正: ID重複を防止するためのカウンター
+    const idCounter = {};
 
     headings.forEach(heading => {
       if (!heading.id) {
-        heading.id = heading.textContent.trim().replace(/\s+/g, '-');
+        let baseId = heading.textContent.trim().replace(/\s+/g, '-');
+        // 同じIDが既に存在する場合はカウンターを追加
+        if (idCounter[baseId] !== undefined) {
+          idCounter[baseId]++;
+          heading.id = `${baseId}-${idCounter[baseId]}`;
+        } else {
+          heading.id = baseId;
+          idCounter[baseId] = 0;
+        }
       }
 
       const li = document.createElement('li');

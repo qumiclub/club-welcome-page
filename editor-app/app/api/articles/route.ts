@@ -6,6 +6,14 @@ import matter from "gray-matter";
 
 export const dynamic = 'force-dynamic';
 
+// セキュリティ: エラーメッセージを安全化
+function getSafeErrorMessage(error: any): string {
+    if (process.env.NODE_ENV === 'production') {
+        return "An internal error occurred";
+    }
+    return error?.message || "Unknown error";
+}
+
 export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
 
@@ -114,6 +122,7 @@ export async function GET(req: Request) {
         });
     } catch (error: any) {
         console.error(error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: getSafeErrorMessage(error) }, { status: 500 });
     }
 }
+

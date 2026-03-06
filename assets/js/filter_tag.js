@@ -64,10 +64,17 @@ document.addEventListener('DOMContentLoaded', function () {
     selectedTags.forEach(tag => {
       const tagEl = document.createElement('div');
       tagEl.className = 'selected-tag';
-      tagEl.innerHTML = `
-        ${tag}
-        <span class="remove-tag" data-tag="${tag}">&times;</span>
-      `;
+
+      // セキュリティ: textContent を使用してXSSを防止
+      const tagText = document.createTextNode(tag + ' ');
+      tagEl.appendChild(tagText);
+
+      const removeBtn = document.createElement('span');
+      removeBtn.className = 'remove-tag';
+      removeBtn.dataset.tag = tag;
+      removeBtn.textContent = '×';
+      tagEl.appendChild(removeBtn);
+
       selectedTagsContainer.appendChild(tagEl);
     });
 
