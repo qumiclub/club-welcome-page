@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Editor App - 記事エディタ
 
-## Getting Started
+九州大学医学部情報研のウェブサイト用記事エディタアプリケーションです。  
+Next.js + NextAuth + GitHub API で構築されており、ブラウザ上でMarkdown記事を作成・編集・管理できます。
 
-First, run the development server:
+## 🌐 公開URL
+https://club-welcome-page.vercel.app/
 
+---
+
+## ✨ 機能
+
+- **記事の作成・編集**: Markdownエディタ + リアルタイムプレビュー
+- **画像管理**: ドラッグ＆ドロップ / クリップボード貼り付けでの画像アップロード
+- **下書き保存**: `published: false` で下書き状態で保存
+- **タグ・著者管理**: 既存のタグ・著者の検索・選択
+- **数式対応**: KaTeX による数式レンダリング
+- **コードハイライト**: Prism.js によるシンタックスハイライト
+- **Google認証**: 許可されたメールアドレスのみアクセス可能
+
+---
+
+## 🛠️ 技術スタック
+
+| 技術 | 用途 |
+|------|------|
+| [Next.js](https://nextjs.org/) 16 | フレームワーク |
+| [NextAuth.js](https://next-auth.js.org/) | Google OAuth 認証 |
+| [Octokit](https://github.com/octokit/rest.js) | GitHub API クライアント |
+| [React Markdown](https://github.com/remarkjs/react-markdown) | Markdownプレビュー |
+| [KaTeX](https://katex.org/) | 数式レンダリング |
+| [Tailwind CSS](https://tailwindcss.com/) 4 | スタイリング |
+| [Vercel](https://vercel.com/) | ホスティング |
+
+---
+
+## 🚀 セットアップ
+
+### 1. 依存パッケージのインストール
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd editor-app
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 環境変数の設定
+`.env.local` ファイルを作成し、以下の環境変数を設定します。  
+`env.example` を参考にしてください。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 環境変数 | 説明 |
+|----------|------|
+| `GOOGLE_CLIENT_ID` | Google OAuth クライアントID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth クライアントシークレット |
+| `NEXTAUTH_SECRET` | NextAuth用シークレット（32文字以上のランダム文字列） |
+| `NEXTAUTH_URL` | アプリのURL（ローカル: `http://localhost:3000`） |
+| `ALLOWED_EMAILS` | ログイン許可メールアドレス（カンマ区切り） |
+| `GITHUB_TOKEN` | GitHub Personal Access Token（repo権限が必要） |
+| `GITHUB_OWNER` | GitHubリポジトリのオーナー |
+| `GITHUB_REPO` | GitHubリポジトリ名 |
+| `NEXT_PUBLIC_GITHUB_OWNER` | プレビュー用（クライアント側で使用） |
+| `NEXT_PUBLIC_GITHUB_REPO` | プレビュー用（クライアント側で使用） |
 
-## Learn More
+### 3. 開発サーバーの起動
+```bash
+npm run dev
+```
+http://localhost:3000 でアクセスできます。
 
-To learn more about Next.js, take a look at the following resources:
+### 4. ビルド確認
+```bash
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 ディレクトリ構成
 
-## Deploy on Vercel
+```
+editor-app/
+├── app/
+│   ├── api/
+│   │   ├── articles/         # 記事の取得・削除 API
+│   │   │   ├── route.ts      # GET: 記事一覧
+│   │   │   └── [filename]/
+│   │   │       └── route.ts  # GET: 記事詳細 / DELETE: 記事削除
+│   │   ├── auth/             # NextAuth 認証
+│   │   ├── commit/           # 記事の作成・更新 API
+│   │   │   └── route.ts
+│   │   ├── images/           # 画像一覧 API
+│   │   │   └── route.ts
+│   │   └── upload/           # 画像アップロード API
+│   │       └── route.ts
+│   ├── auth/error/           # 認証エラーページ
+│   ├── dashboard/            # ダッシュボード（記事管理）
+│   ├── edit/[filename]/      # 記事編集ページ
+│   ├── layout.tsx            # ルートレイアウト
+│   ├── page.tsx              # トップページ（新規記事作成）
+│   ├── globals.css
+│   └── preview.css           # プレビュー用CSS
+├── components/
+│   ├── Editor.tsx            # メインエディタコンポーネント
+│   └── Providers.tsx         # NextAuth SessionProvider
+├── lib/
+│   └── auth.ts               # NextAuth設定（Google OAuth + メール許可リスト）
+├── env.example               # 環境変数テンプレート
+├── next.config.ts
+├── package.json
+└── tsconfig.json
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔒 セキュリティ
+
+- **認証**: Google OAuth + メールアドレス許可リストによるアクセス制限
+- **Path Traversal防止**: APIエンドポイントでファイル名を厳密に検証
+- **ファイルアップロード制限**: 画像MIMEタイプのみ許可、最大5MB
+- **エラーメッセージ安全化**: 本番環境では内部エラーの詳細を非表示
+
+---
+
+## 📄 ライセンス
+MIT License

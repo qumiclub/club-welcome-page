@@ -1,93 +1,140 @@
-# 部活紹介サイトの使い方
+# 九州大学医学部情報研 - 部活紹介サイト
 
-## 構成
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://qumiclub.github.io/club-welcome-page/)
+[![Editor App](https://img.shields.io/badge/Editor-Vercel-blue)](https://club-welcome-page.vercel.app/)
 
-このプロジェクトはJekyllを使用して作成された部活紹介サイトです。以下のディレクトリ構成を採用しています。
+九州大学医学部情報研の公式ウェブサイトです。Jekyll + GitHub Pages で構築されています。
 
-### ディレクトリ構成
+## 🌐 公開URL
 
-- **`_config.yml`**
-  サイトの設定ファイルです。`url`や`repository`など、サイト全体の設定を変更できます。
-  転用する場合は、`url`と`repository`、`baseurl`の修正が必須です。
-
-- **`_layouts/`**
-  サイト全体のレイアウトを管理するディレクトリです。
-  - `default.html` : 全体の基本的なレイアウトが定義されています。共通のヘッダーやフッターなど、各ページに共通する部分をここで定義します。
-
-- **`_pages/`**
-  各ページのコンテンツをMarkdown形式で管理するディレクトリです。
-  - `home.md`: トップページのコンテンツ。
-  - `members.md`: 部活のメンバー紹介ページのコンテンツ。
-  - `activities.md`: 部活の活動内容ページのコンテンツ。
-
-*   **`_posts/`**
-    ブログ記事（投稿）をMarkdown形式で管理するディレクトリです。ファイル名は日付とタイトルを含む必要があります（例: `2023-10-27-新しい記事.md`）。  
-    Jekyllは、このディレクトリ内のファイルを自動的にブログ記事として処理します。
-
-*   **`_sass/`**
-    Sass（Syntactically Awesome Style Sheets）ファイルを格納するディレクトリです。SassはCSSをより効率的に記述するための拡張言語で、変数、ネスト、mixinなどの機能を利用できます。  
-    このディレクトリ内の `.scss` または `.sass` ファイルは、Jekyllによって自動的にCSSファイルに変換されます。
-
-- **`assets/`**
-  静的ファイル（画像、CSS、JavaScriptなど）を格納するディレクトリです。
-  - `css/`: スタイルシート（CSS）ファイル。
-  - `images/`: サイトに使用する画像ファイル。
-  - `js/`: JavaScriptファイル。
-
-## 編集方法
-
-1. **ページの作成・編集**
-   `_pages/` ディレクトリ内にあるMarkdownファイル（`.md`）を編集して、コンテンツを更新します。
-
-2. **レイアウトの変更**
-   レイアウトファイルは `_layouts/` フォルダにあります。`default.html` を編集あるいは別のhtmlファイルを作成して、デザインを変更・追加できます。
-
-3. **スタイルの変更**
-   CSSの変更は、`assets/css/` で行います。デザインの変更を行いたい場合は、このファイルを編集します。
-
-4.  **記事への画像の追加**
-    記事に画像を追加するには、以下の手順に従ってください。
-
-    1.  **画像をフォルダに追加:** `assets/images/` ディレクトリに画像ファイルを配置します。
-    2.  **Markdownで画像を埋め込む:** 記事のMarkdownファイル内で、以下の形式で画像へのリンクを記述します。
-
-        ```markdown
-        ![代替テキスト]({{ site.baseurl }}/assets/images/あなたの画像ファイル名.png)
-        ```
-
-        - `代替テキスト`には、画像が表示されない場合に表示される説明文を記述します。
-        - `あなたの画像ファイル名.png` の部分を、追加した実際のファイル名に置き換えてください。
+| サービス | URL |
+|----------|-----|
+| **ウェブサイト** | https://qumiclub.github.io/club-welcome-page/ |
+| **記事エディタ** | https://club-welcome-page.vercel.app/ |
 
 ---
 
-## Dockerでのビルド方法
+## 📁 ディレクトリ構成
 
-このプロジェクトはGithubPagesで使うために作られたものですが、
-開発中のウェブサイトのチェックはDockerを使ってローカル環境で行えます。
-以下の手順に従ってください。
+```
+club-welcome-page/
+├── _config.yaml          # サイト設定（url, baseurl, repository等）
+├── _layouts/             # HTMLレイアウトテンプレート
+│   ├── default.html      # 基本レイアウト（共通ヘッダー・フッター）
+│   ├── home.html         # トップページ用
+│   ├── article.html      # 記事ページ用
+│   └── article-list.html # 記事一覧ページ用
+├── _pages/               # 各ページ（Markdown）
+│   ├── about-us.md       # About Us
+│   ├── members.md        # メンバー紹介
+│   ├── contact.md        # 連絡先
+│   └── article-list.md   # 記事一覧
+├── _posts/               # ブログ記事（Markdown）
+│   └── YYYY-MM-DD-タイトル.md
+├── _includes/            # 共通パーツ（head, header, footer）
+├── _sass/                # Sassスタイルシート
+├── _data/                # データファイル（news.yml等）
+├── assets/
+│   ├── css/              # メインCSS
+│   ├── images/           # 画像ファイル
+│   └── js/               # JavaScript（TOC, タグフィルター等）
+├── editor-app/           # 記事エディタ（Next.js）→ 詳細は editor-app/README.md
+├── Dockerfile            # Jekyll用Dockerファイル
+├── docker-compose.yaml   # Docker Compose設定
+└── index.html            # トップページ
+```
 
+---
+
+## ✏️ コンテンツの編集方法
+
+### ページの編集
+`_pages/` 内のMarkdownファイルを編集します。
+
+### 記事の作成・編集
+2つの方法があります：
+
+1. **記事エディタ（推奨）**: https://club-welcome-page.vercel.app/ にアクセスし、Googleアカウントでログインして記事を作成・編集できます。
+2. **手動**: `_posts/` に `YYYY-MM-DD-タイトル.md` 形式でファイルを作成します。
+
+### 記事への画像の追加
+```markdown
+![代替テキスト]({{ site.baseurl }}/assets/images/ファイル名.png)
+```
+- 記事エディタを使えば、ドラッグ＆ドロップで画像をアップロードできます。
+
+### レイアウト・スタイルの変更
+- レイアウト: `_layouts/` 内のHTMLファイル
+- スタイル: `assets/css/` 内のCSSファイル
+
+---
+
+## 🐳 ローカル開発環境
 
 ### 必要なもの
+- Docker / Docker Compose
 
-- **Docker**
+### Jekyll サイトの起動
+```bash
+docker compose up
+```
+http://localhost:4000/club-welcome-page/ でアクセスできます。
 
-### 手順
+ファイル構成を変更した場合は再ビルドしてください：
+```bash
+docker compose up --build
+```
 
-1. **Dockerイメージのビルド**
-   プロジェクトディレクトリで以下のコマンドを実行して、Dockerイメージをビルドします。
-   ```bash
-   docker compose up
-   ```
+### Editor App の起動
+```bash
+cd editor-app
+npm install
+npm run dev
+```
+http://localhost:3000 でアクセスできます。詳細は [editor-app/README.md](editor-app/README.md) を参照してください。
 
-   ファイルやディレクトリを追加・移動した場合、Dockerコンテナに変更が反映されていない可能性があります。  
-   一度コンテナを停止し、再ビルドして起動してみてください。
-   ```bash
-   docker compose up --build
-   ```
+---
 
-2. **サイトの確認**
-   ブラウザで `http://localhost:4000/{repo}` にアクセスし、サイトが正しく表示されることを確認します。
+## 🔀 Git ブランチ運用ルール
 
-## Tips
-- _pagesはhtmlで全部書いてしまったほうが良い。
-- 記事は予約投稿もできる。
+**`main` ブランチには直接プッシュしません。** 必ずブランチを切ってPull Requestを通してください。
+
+### ブランチ命名規則
+
+| 種類 | 命名 | 例 |
+|------|------|----|
+| バグ修正 | `fix/内容` | `fix/security-update` |
+| 新機能 | `feature/内容` | `feature/dark-mode` |
+| コンテンツ更新 | `content/内容` | `content/add-members` |
+
+### コミットメッセージ規則
+
+| プレフィックス | 用途 |
+|----------------|------|
+| `fix:` | バグ修正 |
+| `feat:` | 新機能追加 |
+| `docs:` | ドキュメント変更 |
+| `style:` | デザイン・見た目の変更 |
+| `refactor:` | リファクタリング |
+
+### 開発の流れ
+```bash
+git checkout main && git pull origin main   # 最新を取得
+git checkout -b fix/○○                      # ブランチ作成
+# ... 修正 ...
+git add . && git commit -m "fix: 修正内容"  # コミット
+git push origin fix/○○                      # プッシュ
+# GitHub上でPRを作成 → マージ
+```
+
+---
+
+## 💡 Tips
+- `_pages` はHTMLで書いた方がレイアウトの自由度が高い
+- 記事は未来の日付を設定すると予約投稿になる
+- `published: false` を frontmatter に設定すると下書き保存になる
+
+---
+
+## 📄 ライセンス
+MIT License
