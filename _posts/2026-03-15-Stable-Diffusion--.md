@@ -1,6 +1,8 @@
 ---
 layout: article
-title: 'Stable Diffusion: '
+title: >-
+  Stable Diffusion: High-Resolution Image Synthesis with Latent Diffusion Models
+  (CVPR 2022 Oral)
 author: K. Kotaro
 tags: []
 date: '2026-03-15'
