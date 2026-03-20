@@ -13,6 +13,7 @@ published: false
 
 この記事では、基本となる「Single Head Attention」から「Multi Head Attention」への発展、そして多くの人が陥りがちな**決定的な勘違い**について、数式を交えながら分かりやすく解説します！
 
+
 ---
 
 
@@ -59,19 +60,7 @@ $\mathbf{Q}, \mathbf{K}, \mathbf{V}$  が準備できたら、以下の有名な
 $$\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V}) = \text{softmax}\left(\dfrac{\mathbf{Q}\mathbf{K}^{T}}{\sqrt{d_{k}}}\right)\mathbf{V} = \mathbf{h}$$  
 この計算結果によって、単語間の関係性が抽出されます。
 
----
-
-
-
-
-
-
-
-
-
-
-
-
+イメージ的には、**単一**の重みである$\mathbf{W_Q}, \mathbf{W_K}, \mathbf{W_V}$ を用いて単語1と単語2の関係性を導いています。Multi Head Attentionでは、ここを単一ではなく多数の重みを用います。
 
 
 
@@ -85,19 +74,19 @@ $$\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V}) = \text{softmax}\left(\dfra
 
 次に、より表現力の高い Multi Head Attention についてです。
 
-ここでは、次元をヘッド数 $h$ で分割し、1つのヘッドあたりの次元数を $d_{k}=d_{v}=\frac{d_{model}}{h}=d_{head}$ として計算します。
+ここでは、次元をヘッド数 $h$ で分割し、1つのヘッドあたりの次元数を $d_{k}=d_{v}=\dfrac{d_{model}}{h}=d_{head}$ として計算します。
 
 ### なぜヘッドを分けるのか？
-ヘッドごとに異なる重み（例えば $W_{v}$ など）を持たせることで、捉える特徴量もそれぞれ違うものになるからです。
+ヘッドごとに異なる重みを持たせることで、捉える特徴量もそれぞれ違うものになるからです。
 
 各ヘッド $i$ において、先ほどと同じようにAttentionを計算します。
+$$\text{Attention}(\mathbf{Q_i},\mathbf{K_i},\mathbf{V_i}) = \text{softmax}\left(\dfrac{\mathbf{Q_i}\mathbf{K_i}^{T}}{\sqrt{d_{head}}}\right)\mathbf{V_i} = \mathbf{h_i}$$  
 
-$$Attention(Q_{i},K_{i},V_{i})=softmax(\frac{Q_{i}K_{i}^{T}}{\sqrt{d_{head}}})V_{i}=h_{i}$$
 
 ### 結果の結合（Concat）と最終出力
 すべてのヘッドで計算した結果 $h_1, h_2, ..., h_h$ は、最後に結合（Concat）されます。
 
-$$h=Concat(h_{1},h_{2},...,h_{h})$$
+$$\mathbf{h}=\text{Concat}(\mathbf{h_{1}},\mathbf{h_{2}},...,\mathbf{h_{h}})$$
 
 そして最後に、学習可能な行列 $W_O$ を掛け合わせることで、最終出力が得られます。
 
@@ -112,7 +101,7 @@ Multi Head Attentionの実装や概念を理解する際、実は**2つの正し
 以下の2つは、アプローチが違うだけでどちらも同じことを行っています。
 
 1. **小さい重みを用意する考え方（論文の手法）:**
-   小さい $W_Q, W_K, W_V$ を $h$ 個ずつ用意して、それをそれぞれ単語のベクトルにかけて、異なる特徴量に注目しながら分析しているという考え方 [cite: 92, 93][cite_start]。「Attention is All You Need」論文ではこの考え方が用いられています。
+   小さい $W_{Q_i}, W_{K_i}, W_{V_i}$ を $h$ 個ずつ用意して、それをそれぞれ単語のベクトルにかけて、異なる特徴量に注目しながら分析しているという考え方 [cite: 92, 93][cite_start]。「Attention is All You Need」論文ではこの考え方が用いられています。
 2. **大きな行列を分割する考え方:**
    単一の大きな重みからできたQ, K, Vを、それぞれ縦に $h$ 等分して、それぞれで計算しているという考え方 。
 
