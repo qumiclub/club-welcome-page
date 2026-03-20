@@ -5,14 +5,14 @@ title: >-
   (CVPR 2022 Oral)
 author: K. Kotaro
 tags: []
-date: '2026-03-15'
+date: '2026-03-20'
 published: false
 ---
 # 画像生成AIの革命児「Stable Diffusion」の仕組みをざっくり解説！【論文解説】
 
 「テキストからこんなに綺麗な画像が作れるなんて！」と世界中を驚かせた画像生成AI「Stable Diffusion」。今では普通のゲーミングPCでも動かせるほど軽量化され、AIの民主化に大きく貢献しました。
 
-今回は、このStable Diffusionのベースとなっている論文**High-Resolution Image Synthesis with Latent Diffusion Models**の内容を、専門的な数式を使わずにざっくりと解説します！
+今回は、このStable Diffusionのベースとなっている論文**High-Resolution Image Synthesis with Latent Diffusion Models**の内容を、専門的な数式を使わずにざっくりと解説します！このページを読んでなんとなく理解された方は、もう少し深く調べてみてください。
 
 ---
 
