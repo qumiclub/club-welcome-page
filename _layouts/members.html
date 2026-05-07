@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include header.html %}
+  <main>
+    <div class="container">
+      <h1>{{ page.title }}</h1>
+      <p>現在の部員を学年ごとに紹介します。</p>
+
+      {% for grade in page.grades %}
+      <h2>{{ grade.name }}</h2>
+      {% if grade.members %}
+      <div class="member-grid">
+        {% for member in grade.members %}
+        <div class="member-card">
+          <div class="member-icon">{{ member.icon }}</div>
+          <h3 class="member-name">{{ member.name }}</h3>
+          <p class="member-bio">{{ member.bio }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <ul><li><strong>氏名未設定</strong> - 簡単な自己紹介がここに入ります</li></ul>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </main>
+  {% include footer.html %}
+</body>
+</html>
