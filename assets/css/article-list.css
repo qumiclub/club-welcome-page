@@ -67,7 +67,7 @@
     left: 0;
     right: 0;
     background: var(--white);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: var(--shadow);
     margin-top: 0.5rem;
@@ -83,8 +83,9 @@
     transition: background-color 0.2s;
 }
 
-.tag-option:hover {
-    background-color: #f1f5f9;
+.tag-option:hover,
+.tag-option.is-highlighted {
+    background-color: var(--surface-alt);
     color: var(--primary-color);
 }
 
@@ -105,14 +106,14 @@
     flex-direction: row;
     align-items: baseline;
     gap: 2rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;
     height: auto;
 }
 
 .post-card:hover {
     transform: none;
-    background-color: #f8fafc;
+    background-color: var(--background-color);
 }
 
 .post-card:last-child {
@@ -168,7 +169,7 @@
 }
 
 .tag {
-    background-color: #f1f5f9;
+    background-color: var(--surface-alt);
     color: var(--text-light);
     padding: 0.1rem 0.5rem;
     border-radius: 4px;

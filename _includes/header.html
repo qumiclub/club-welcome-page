@@ -1,9 +1,15 @@
+<a href="#main" class="skip-link">本文へスキップ</a>
 <header class="site-header">
   <div class="header-container">
     <div class="site-title">
       <a href="{{ '/' | relative_url }}">{{ site.title | escape }}</a>
     </div>
-    <nav class="site-nav">
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="メニューを開閉する">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <nav class="site-nav" id="site-nav">
       <ul>
         <li><a href="{{ '/about-us/' | relative_url }}">ABOUT US</a></li>
         <li><a href="{{ '/members/' | relative_url }}">MEMBERS</a></li>
