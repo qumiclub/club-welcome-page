@@ -3,7 +3,10 @@
 import { useSession, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash2, Edit, Plus } from "lucide-react";
+import { Trash2, Edit, Plus, Loader2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/ToastProvider";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface Article {
     name: string;
@@ -13,13 +16,37 @@ interface Article {
     published?: boolean;
 }
 
+function ArticleListSkeleton() {
+    return (
+        <div className="bg-white rounded shadow overflow-hidden">
+            <div className="p-4 border-b bg-gray-100">
+                <Skeleton className="h-4 w-32" />
+            </div>
+            <div className="divide-y">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="flex items-center justify-between p-4">
+                        <Skeleton className="h-4 w-1/2" />
+                        <div className="flex gap-3">
+                            <Skeleton className="h-4 w-10" />
+                            <Skeleton className="h-4 w-14" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function Dashboard() {
     const { data: session } = useSession();
+    const toast = useToast();
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [pendingDelete, setPendingDelete] = useState<Article | null>(null);
+    const [deletingName, setDeletingName] = useState<string | null>(null);
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -37,15 +64,18 @@ export default function Dashboard() {
             } else {
                 setError(data.error || "Failed to fetch articles");
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : String(err));
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDelete = async (filename: string, sha: string) => {
-        if (!confirm(`Are you sure you want to delete ${filename}?`)) return;
+    const confirmDelete = async () => {
+        if (!pendingDelete) return;
+        const { name: filename, sha } = pendingDelete;
+        setPendingDelete(null);
+        setDeletingName(filename);
 
         try {
             const res = await fetch(`/api/articles/${filename}`, {
@@ -58,12 +88,16 @@ export default function Dashboard() {
 
             if (res.ok) {
                 setArticles(articles.filter((a) => a.name !== filename));
+                toast.success(`"${filename}" was deleted.`);
             } else {
                 const data = await res.json();
-                alert(`Failed to delete: ${data.error}`);
+                toast.error(`Failed to delete: ${data.error}`);
             }
-        } catch (err: any) {
-            alert(`Error: ${err.message}`);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            toast.error(`Error: ${message}`);
+        } finally {
+            setDeletingName(null);
         }
     };
 
@@ -119,7 +153,7 @@ export default function Dashboard() {
                 </div>
 
                 {loading ? (
-                    <p>Loading articles...</p>
+                    <ArticleListSkeleton />
                 ) : error ? (
                     <p className="text-red-600">{error}</p>
                 ) : (
@@ -132,42 +166,50 @@ export default function Dashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {paginatedArticles.map((article) => (
-                                    <tr key={article.sha} className="border-b last:border-0 hover:bg-gray-50">
-                                        <td className="p-4 text-gray-800 overflow-hidden">
-                                            <div className="flex items-center gap-2">
-                                                <span className="truncate" title={article.name}>
-                                                    {article.name}
-                                                </span>
-                                                {article.published === false && (
-                                                    <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full whitespace-nowrap flex-shrink-0">
-                                                        Draft
+                                {paginatedArticles.map((article) => {
+                                    const isDeleting = deletingName === article.name;
+                                    return (
+                                        <tr key={article.sha} className="border-b last:border-0 hover:bg-gray-50">
+                                            <td className="p-4 text-gray-800 overflow-hidden">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="truncate" title={article.name}>
+                                                        {article.name}
                                                     </span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="p-4" style={{ width: '140px' }}>
-                                            <div className="flex justify-end gap-3">
-                                                <Link
-                                                    href={`/edit/${encodeURIComponent(article.name)}`}
-                                                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
-                                                    title="Edit"
-                                                >
-                                                    <Edit size={18} />
-                                                    <span className="hidden sm:inline">Edit</span>
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleDelete(article.name, article.sha)}
-                                                    className="flex items-center gap-1 text-red-600 hover:text-red-800"
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 size={18} />
-                                                    <span className="hidden sm:inline">Delete</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                                    {article.published === false && (
+                                                        <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full whitespace-nowrap flex-shrink-0">
+                                                            Draft
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="p-4" style={{ width: '140px' }}>
+                                                <div className="flex justify-end gap-3">
+                                                    <Link
+                                                        href={`/edit/${encodeURIComponent(article.name)}`}
+                                                        className={`flex items-center gap-1 text-blue-600 hover:text-blue-800 ${isDeleting ? 'pointer-events-none opacity-50' : ''}`}
+                                                        title="Edit"
+                                                    >
+                                                        <Edit size={18} />
+                                                        <span className="hidden sm:inline">Edit</span>
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => setPendingDelete(article)}
+                                                        disabled={isDeleting}
+                                                        className="flex items-center gap-1 text-red-600 hover:text-red-800 disabled:opacity-50"
+                                                        title="Delete"
+                                                    >
+                                                        {isDeleting ? (
+                                                            <Loader2 size={18} className="animate-spin" />
+                                                        ) : (
+                                                            <Trash2 size={18} />
+                                                        )}
+                                                        <span className="hidden sm:inline">Delete</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                                 {paginatedArticles.length === 0 && (
                                     <tr>
                                         <td colSpan={2} className="p-8 text-center text-gray-500">
@@ -203,6 +245,17 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                open={!!pendingDelete}
+                variant="danger"
+                title="Delete Article"
+                message={pendingDelete ? `Are you sure you want to delete "${pendingDelete.name}"? This cannot be undone.` : ''}
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                onConfirm={confirmDelete}
+                onCancel={() => setPendingDelete(null)}
+            />
         </div>
     );
 }

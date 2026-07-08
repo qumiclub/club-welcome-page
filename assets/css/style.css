@@ -10,10 +10,15 @@
   --text-light: #64748b;
   --background-color: #f8fafc;
   --white: #ffffff;
+  --border-color: #e2e8f0;
+  --border-color-strong: #cbd5e1;
+  --surface-alt: #f1f5f9;
+  --surface-tint: #f0f9ff;
   --max-width: 1200px;
   --header-height: 70px;
   --border-radius: 8px;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 * {
@@ -51,6 +56,51 @@ img {
   height: auto;
 }
 
+/* Accessibility: skip link */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: -999px;
+  z-index: 1000;
+  background-color: var(--primary-color);
+  color: var(--white);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 0 var(--border-radius) 0;
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/* Accessibility: focus-visible for interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible,
+.tag-option:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--white);
+  outline-offset: 3px;
+}
+
+/* Reduced motion: disable transform/animation transitions */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Layout Utilities */
 .container {
   width: 90%;
@@ -83,8 +133,52 @@ img {
 .site-title a {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #2c84f7;
+  color: var(--primary-color);
   white-space: nowrap;
+}
+
+/* Mobile nav toggle (hamburger) */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  border-radius: var(--border-radius);
+}
+
+.nav-toggle:hover {
+  background-color: var(--surface-alt);
+}
+
+.nav-toggle-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: var(--text-color);
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.nav-toggle-bar + .nav-toggle-bar {
+  margin-top: 5px;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .site-nav ul {
@@ -118,13 +212,13 @@ img {
 }
 
 .hero h1 {
-  font-size: 3rem;
+  font-size: clamp(1.8rem, 4vw + 1rem, 3rem);
   margin-bottom: 1rem;
   line-height: 1.2;
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
+  font-size: clamp(1.05rem, 1.2vw + 0.7rem, 1.5rem);
   margin-bottom: 2rem;
   opacity: 0.9;
 }
@@ -147,6 +241,11 @@ img {
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary {
@@ -185,11 +284,12 @@ img {
   padding: 2rem;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  transition: transform 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .feature-item:hover {
   transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
 }
 
 .feature-item h3 {
@@ -214,7 +314,7 @@ img {
 
 .news-list li {
   padding: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: baseline;
   gap: 2rem;
@@ -237,6 +337,30 @@ footer {
   padding: 3rem 0;
   margin-top: auto;
   text-align: center;
+}
+
+.footer-container {
+  padding: 0;
+}
+
+.footer-nav ul {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-nav a {
+  color: var(--white);
+  opacity: 0.85;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.footer-nav a:hover {
+  color: var(--white);
+  opacity: 1;
 }
 
 footer p {
@@ -272,31 +396,16 @@ main {
 
 .container p {
   margin-bottom: 1.5rem;
+  max-width: 70ch;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .hero h1 {
-    font-size: 2rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
+  .nav-toggle {
+    display: inline-flex;
   }
 
   .site-nav {
-    display: none;
-  }
-
-  /* Simple hide for now, or stack */
-
-  .header-container {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .site-nav {
-    display: block;
     width: 100%;
   }
 
@@ -304,6 +413,17 @@ main {
     justify-content: center;
     flex-wrap: wrap;
     gap: 1rem;
+    padding: 0.75rem 0 0.25rem;
+  }
+
+  /* JS 無効時はナビを常に表示したまま(フォールバック)。
+     nav.js が読み込まれた場合のみ、body.js-nav が付与されて開閉式になる。 */
+  body.js-nav .site-nav {
+    display: none;
+  }
+
+  body.js-nav .site-nav.is-open {
+    display: block;
   }
 
   .news-list li {
@@ -334,13 +454,13 @@ main {
 
 .member-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-hover);
 }
 
 .member-icon {
   width: 80px;
   height: 80px;
-  background-color: #e2e8f0;
+  background-color: var(--border-color);
   color: var(--text-light);
   border-radius: 50%;
   display: flex;

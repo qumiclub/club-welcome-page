@@ -7,17 +7,18 @@
 
 <body>
     {% include header.html %}
-    <main>
+    <main id="main">
         <div class="container">
             <h1 class="cards-title">記事一覧</h1>
             <div class="tag-filters">
                 <div class="tag-search-container">
                     <div id="selected-tags" class="selected-tags"></div>
                     <input type="text" id="tag-search-input" class="tag-search-input" placeholder="タグを検索..."
-                        autocomplete="off">
-                    <div id="tag-dropdown" class="tag-dropdown">
+                        autocomplete="off" role="combobox" aria-expanded="false" aria-controls="tag-dropdown"
+                        aria-autocomplete="list" aria-haspopup="listbox" aria-label="タグで記事を絞り込む">
+                    <div id="tag-dropdown" class="tag-dropdown" role="listbox">
                         {% for tag in site.tags %}
-                        <div class="tag-option" data-tag="{{ tag[0] }}">{{ tag[0] }}</div>
+                        <div class="tag-option" data-tag="{{ tag[0] }}" role="option" id="tag-option-{{ forloop.index0 }}">{{ tag[0] }}</div>
                         {% endfor %}
                     </div>
                 </div>

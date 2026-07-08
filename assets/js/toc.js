@@ -2,6 +2,28 @@ document.addEventListener('DOMContentLoaded', function () {
   const toc = document.getElementById('toc');
   const headings = document.querySelectorAll('.main-content h1, .main-content h2, .main-content h3');
 
+  // 記事本文内の画像は遅延読み込みにする
+  document.querySelectorAll('.main-content img').forEach(function (img) {
+    if (!img.hasAttribute('loading')) {
+      img.setAttribute('loading', 'lazy');
+    }
+  });
+
+  // 目次の折りたたみ: モバイルでは初期状態で閉じ、デスクトップ幅では常に開く
+  // (markup 側は open がデフォルトなので、JS 無効環境では常に開いたまま = フォールバック)
+  const tocDetails = document.querySelector('.toc-collapsible');
+  if (tocDetails) {
+    const mobileQuery = window.matchMedia('(max-width: 900px)');
+    if (mobileQuery.matches) {
+      tocDetails.open = false;
+    }
+    mobileQuery.addEventListener('change', function (e) {
+      if (!e.matches) {
+        tocDetails.open = true;
+      }
+    });
+  }
+
   if (toc && headings.length > 0) {
     const ul = document.createElement('ul');
     toc.appendChild(ul);
