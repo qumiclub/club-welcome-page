@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
         },
     },
     pages: {
-        // signIn: '/auth/signin', // Custom signin page if needed, or default
+        signIn: '/auth/signin',
         error: '/auth/error', // Error code passed in query string as ?error=
     },
 };

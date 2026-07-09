@@ -3,33 +3,32 @@
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { ShieldAlert } from 'lucide-react';
 
 function ErrorContent() {
     const searchParams = useSearchParams();
     const error = searchParams.get('error');
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 px-4">
             <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md text-center">
                 <div className="mb-4 text-red-500">
-                    <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
+                    <ShieldAlert className="mx-auto h-16 w-16" />
                 </div>
 
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h1>
+                <h1 className="text-2xl font-bold text-ink mb-2">アクセスが拒否されました</h1>
 
-                <p className="text-gray-600 mb-8">
+                <p className="text-slate-600 mb-8">
                     {error === 'AccessDenied'
-                        ? 'This email address is not on the allowlist. Please use an authorized club account.'
-                        : 'An error occurred during authentication.'}
+                        ? 'このメールアドレスは許可リストに登録されていません。部員用の許可されたGoogleアカウントでログインしてください。'
+                        : '認証中にエラーが発生しました。'}
                 </p>
 
                 <Link
                     href="/"
-                    className="inline-block w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="inline-block w-full px-6 py-3 bg-primary text-white font-medium rounded-md hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
-                    Return to Home & Try Again
+                    トップページに戻ってやり直す
                 </Link>
             </div>
         </div>
@@ -38,7 +37,7 @@ function ErrorContent() {
 
 export default function ErrorPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>読み込み中...</div>}>
             <ErrorContent />
         </Suspense>
     );

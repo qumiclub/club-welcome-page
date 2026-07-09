@@ -45,20 +45,20 @@ export function ImageManagerModal({
                 className="bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col"
                 role="dialog"
                 aria-modal="true"
-                aria-label="Image Manager"
+                aria-label="画像管理"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-gray-800">
-                        Image Manager ({mode === "insert" ? "Insert to Content" : "Select Thumbnail"})
+                        画像管理（{mode === "insert" ? "本文に挿入" : "サムネイルを選択"}）
                     </h2>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl" aria-label="Close">
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl" aria-label="閉じる">
                         &times;
                     </button>
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Upload New Image</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">新しい画像をアップロード</label>
                     <div className="flex items-center gap-3">
                         <input
                             type="file"
@@ -71,12 +71,12 @@ export function ImageManagerModal({
                                     await onUploadFile(file);
                                 }
                             }}
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-primary-dark hover:file:bg-teal-100 disabled:opacity-50"
                         />
                         {isUploading && (
                             <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0">
                                 <Loader2 size={16} className="animate-spin" />
-                                Uploading...
+                                アップロード中...
                             </span>
                         )}
                     </div>
@@ -99,7 +99,9 @@ export function ImageManagerModal({
                         </div>
                     ))}
                     {images.length === 0 && (
-                        <div className="col-span-full text-center py-8 text-gray-500">No images found. Upload one!</div>
+                        <div className="col-span-full text-center py-8 text-gray-500">
+                            画像がありません。アップロードしてみましょう！
+                        </div>
                     )}
                 </div>
             </div>

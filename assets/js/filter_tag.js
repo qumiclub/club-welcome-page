@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const hasAllTags = selectedTags.every(tag => cardTags.includes(tag));
 
       if (selectedTags.length === 0 || hasAllTags) {
-        card.style.display = 'flex';
+        card.style.display = '';
       } else {
         card.style.display = 'none';
       }

@@ -7,8 +7,19 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import SyntaxHighlighter from "react-syntax-highlighter/dist/cjs/prism";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { resolveImageSrc } from "@/lib/imageUrl";
+import type { ExtraProps } from "react-markdown";
 import "../../app/preview.css";
+
+/**
+ * react-markdown v10 は `ExtraProps`（`node`）のみを型として公開しているが、
+ * 旧APIの `inline` フラグを実行時には引き続き渡してくる環境があるため、
+ * 型定義に無いフィールドとして明示的に許容する（`any` を避けるための最小限の拡張）。
+ */
+// `style` は除外する: react-markdown が渡す素の`code`要素向けのCSSProperties型と、
+// SyntaxHighlighterが期待するトークン別スタイルマップの型が競合するため。
+type CodeRendererProps = Omit<React.ComponentPropsWithoutRef<"code">, "style"> & ExtraProps & { inline?: boolean };
 
 interface MarkdownPreviewProps {
     title: string;
@@ -23,9 +34,9 @@ export function MarkdownPreview({ title, author, tags, content }: MarkdownPrevie
 
     return (
         <div className="bg-white p-6 rounded shadow overflow-y-auto preview-container h-full">
-            <h1 className="article-title">{title || "Untitled"}</h1>
+            <h1 className="article-title">{title || "無題の記事"}</h1>
             <div className="article-meta">
-                {author && <span className="author-info">By {author}</span>}
+                {author && <span className="author-info">{author}</span>}
                 {tagList.length > 0 && (
                     <div className="article-tags ml-4">
                         {tagList.map((tag) => (
@@ -42,10 +53,10 @@ export function MarkdownPreview({ title, author, tags, content }: MarkdownPrevie
                     remarkPlugins={[remarkGfm, remarkMath]}
                     rehypePlugins={[rehypeKatex]}
                     components={{
-                        code({ node, inline, className, children, ...props }: any) {
+                        code({ node, inline, className, children, ...props }: CodeRendererProps) {
                             const match = /language-(\w+)/.exec(className || "");
                             return !inline && match ? (
-                                <SyntaxHighlighter style={vscDarkPlus} language={match[1]} PreTag="div" {...props}>
+                                <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
                                     {String(children).replace(/\n$/, "")}
                                 </SyntaxHighlighter>
                             ) : (
@@ -55,17 +66,8 @@ export function MarkdownPreview({ title, author, tags, content }: MarkdownPrevie
                             );
                         },
                         img: ({ node, ...props }) => {
-                            let src = (props.src as string) || "";
-                            // Handle Jekyll baseurl
-                            if (src.includes("{{ site.baseurl }}")) {
-                                src = src.replace("{{ site.baseurl }}", "");
-                            }
-                            if (src.startsWith("/assets/images/")) {
-                                // Rewrite relative path to GitHub Raw URL for preview
-                                // Note: This will work as long as the repo structure is consistent
-                                src = `https://raw.githubusercontent.com/${process.env.NEXT_PUBLIC_GITHUB_OWNER || "qumiclub"}/${process.env.NEXT_PUBLIC_GITHUB_REPO || "club-welcome-page"}/main${src}`;
-                            }
-                            return <img {...props} src={src} style={{ maxWidth: "100%" }} />;
+                            const src = resolveImageSrc(props.src as string);
+                            return <img {...props} alt={props.alt || ""} src={src} style={{ maxWidth: "100%" }} />;
                         },
                     }}
                 >

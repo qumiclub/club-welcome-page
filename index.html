@@ -6,7 +6,8 @@ description: "九州大学医学部情報研は、医療ビッグデータを解
 
 <div class="hero">
     <div class="hero-content">
-        <h1>情報技術を武器に、次世代の医療を切り拓く</h1>
+        <p class="hero-eyebrow">// MEDICAL × INFORMATICS</p>
+        <h1>情報技術を武器に、<span class="grad-text">次世代の医療</span>を切り拓く</h1>
         <p class="hero-subtitle">「医療×情報」の力で、医療の現場をより良くできる人材へ。</p>
         <p>九州大学医学部情報研は、情報技術と医療の融合領域に関心を持つ学生が集まるコミュニティです。<br>医療や社会に対して確かな貢献ができる実力の養成を目指します。
         </p>
@@ -17,22 +18,68 @@ description: "九州大学医学部情報研は、医療ビッグデータを解
     </div>
 </div>
 
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">19位</span>
+                <span class="stat-label">Vesuvius Challenge（1391チーム中）</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">134位</span>
+                <span class="stat-label">CSIRO Biomass（3803チーム中）</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">10位</span>
+                <span class="stat-label">第6回日本眼科AIコンテスト（300+チーム中）</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">主催</span>
+                <span class="stat-label">全国医療AIコンテスト</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="features">
     <div class="container">
         <h2>活動内容</h2>
         <div class="feature-grid">
             <div class="feature-item">
+                <span class="feature-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </span>
                 <h3>コンペティションへの挑戦</h3>
                 <p>「Vesuvius Challenge」世界19位など、国内外のデータ分析コンペに積極的に参加。実践を通して、世界に通用する確かな技術力を磨いています。</p>
             </div>
             <div class="feature-item">
+                <span class="feature-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </span>
                 <h3>輪読会・抄読会</h3>
                 <p>毎週月曜日に開催。書籍による基礎知識の定着（輪読）と、最新技術をいかに社会に役立てるかの議論（抄読）を通じ、知見を共有しています。</p>
             </div>
             <div class="feature-item">
+                <span class="feature-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>
+                </span>
                 <h3>医療AIコンテストの主催</h3>
                 <p>自ら「全国医療AIコンテスト」を主催。プレイヤーとしてだけでなく、医療×AIに関心を持つ学生の裾野を広げる活動にも取り組んでいます。</p>
             </div>
+        </div>
+    </div>
+</section>
+
+<section class="recent-articles">
+    <div class="container">
+        <h2>最新記事</h2>
+        <div class="recent-articles-grid">
+            {% for post in site.posts limit:3 %}
+            {% include post-card.html post=post %}
+            {% endfor %}
+        </div>
+        <div class="recent-articles-footer">
+            <a href="{{ '/article-list/' | relative_url }}" class="btn btn-secondary">記事一覧をすべて見る</a>
         </div>
     </div>
 </section>

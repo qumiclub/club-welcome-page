@@ -6,10 +6,26 @@ locale: "ja-JP"
 title: 九州大学医学部情報研
 name: "九州大学医学部情報研"
 description: "九州大学医系サークル・九州大学医学部情報研です、病院キャンパスでKaggleや統計解析の勉強会等の活動を行っています"
+twitter:
+  username: qumiclub
+  card: summary_large_image
+social:
+  name: 九州大学医学部情報研
+  links:
+    - https://x.com/qumiclub
 collections:
   pages:
     output: true
     permalink: /:name/
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/images/ogp.png
+plugins:
+  - jekyll-seo-tag
+  - jekyll-feed
+  - jekyll-sitemap
 kramdown:
   input: GFM
   toc_levels: 1..3

@@ -54,6 +54,10 @@ export function useDraftAutosave({
 }: UseDraftAutosaveOptions) {
     const [pendingDraft, setPendingDraft] = useState<StoredDraft | null>(null);
     const [ready, setReady] = useState(false);
+    /** 直近でlocalStorageへ自動保存が完了した時刻（表示用: 「自動保存済み HH:MM」）。 */
+    const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+    /** デバウンス待機中かどうか（表示用: 「編集中…」）。 */
+    const [isPending, setIsPending] = useState(false);
     const baselineRef = useRef<DraftSnapshot>(baselineSnapshot);
     const isDirtyRef = useRef(false);
     const draftKeyRef = useRef(draftKey);
@@ -87,13 +91,17 @@ export function useDraftAutosave({
     useEffect(() => {
         if (!ready) return;
         isDirtyRef.current = !isSameSnapshot(snapshot, baselineRef.current);
+        setIsPending(true);
 
         const timer = setTimeout(() => {
             try {
                 const toStore: StoredDraft = { ...snapshot, savedAt: Date.now() };
                 localStorage.setItem(draftKeyRef.current, JSON.stringify(toStore));
+                setLastSavedAt(toStore.savedAt);
             } catch {
                 // Storage full/unavailable - autosave is best-effort.
+            } finally {
+                setIsPending(false);
             }
         }, AUTOSAVE_DEBOUNCE_MS);
 
@@ -140,7 +148,8 @@ export function useDraftAutosave({
         }
         baselineRef.current = committedSnapshot;
         isDirtyRef.current = false;
+        setLastSavedAt(null);
     }, []);
 
-    return { pendingDraft, restore, discard, clearAfterCommit };
+    return { pendingDraft, restore, discard, clearAfterCommit, lastSavedAt, isPending };
 }

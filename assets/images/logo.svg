@@ -1,0 +1,15 @@
+<!-- 九州大学医学部情報研 ロゴマーク: グラデ角丸スクエア + ECG心電図ポリライン + <> ブラケット(医療×コード) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="九州大学医学部情報研 ロゴ">
+  <defs>
+    <linearGradient id="logo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="62" height="62" rx="16" fill="url(#logo-grad)"/>
+  <!-- <> bracket -->
+  <path d="M23 20 L13 32 L23 44" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <path d="M41 20 L51 32 L41 44" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <!-- ECG heartbeat line -->
+  <polyline points="19,33 26,33 29,25 34,41 38,33 45,33" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

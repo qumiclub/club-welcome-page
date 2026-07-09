@@ -1,0 +1,17 @@
+---
+layout: default
+permalink: /404.html
+sitemap: false
+title: ページが見つかりません
+description: "お探しのページは見つかりませんでした。"
+---
+
+<div class="error-page">
+  <p class="error-code">404</p>
+  <h1>ページが見つかりません</h1>
+  <p>お探しのページは移動または削除された可能性があります。URLをご確認いただくか、以下のリンクからお探しください。</p>
+  <div class="error-actions">
+    <a href="{{ '/' | relative_url }}" class="btn btn-primary">トップページへ戻る</a>
+    <a href="{{ '/article-list/' | relative_url }}" class="btn btn-secondary">記事一覧を見る</a>
+  </div>
+</div>

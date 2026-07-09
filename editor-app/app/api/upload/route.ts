@@ -1,7 +1,6 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { Octokit } from "@octokit/rest";
 import { NextResponse } from "next/server";
+import { requireEditorSession } from "@/lib/apiAuth";
 
 // セキュリティ: 許可するMIMEタイプ
 const ALLOWED_MIME_TYPES = [
@@ -16,19 +15,16 @@ const ALLOWED_MIME_TYPES = [
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 // セキュリティ: エラーメッセージを安全化
-function getSafeErrorMessage(error: any): string {
+function getSafeErrorMessage(error: unknown): string {
     if (process.env.NODE_ENV === 'production') {
         return "An internal error occurred";
     }
-    return error?.message || "Unknown error";
+    return error instanceof Error ? error.message : String(error);
 }
 
 export async function POST(req: Request) {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, response } = await requireEditorSession();
+    if (!session) return response!;
 
     try {
         const formData = await req.formData();
@@ -85,7 +81,7 @@ export async function POST(req: Request) {
 
         // Return the relative path for Jekyll
         return NextResponse.json({ url: `/assets/images/${filename}` });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error);
         return NextResponse.json({ error: getSafeErrorMessage(error) }, { status: 500 });
     }

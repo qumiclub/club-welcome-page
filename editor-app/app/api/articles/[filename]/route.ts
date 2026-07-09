@@ -1,39 +1,25 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { Octokit } from "@octokit/rest";
 import { NextResponse } from "next/server";
+import { requireEditorSession } from "@/lib/apiAuth";
+import { isValidFilename } from "@/lib/filename";
 
 import matter from "gray-matter";
 
-// セキュリティ: 安全なファイル名検証
-function isValidFilename(filename: string): boolean {
-    // Path Traversal防止: .. や / を含む場合は拒否
-    if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-        return false;
-    }
-    // .md で終わる必要がある
-    if (!filename.endsWith('.md')) {
-        return false;
-    }
-    // 許可する文字: 英数字、日本語、ハイフン、アンダースコア、ドット
-    const validPattern = /^[\w\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\-_.]+$/;
-    return validPattern.test(filename);
-}
 
 // セキュリティ: エラーメッセージを安全化
-function getSafeErrorMessage(error: any): string {
+function getSafeErrorMessage(error: unknown): string {
     if (process.env.NODE_ENV === 'production') {
         return "An internal error occurred";
     }
-    return error?.message || "Unknown error";
+    return error instanceof Error ? error.message : String(error);
 }
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ filename: string }> }
 ) {
-    const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, response } = await requireEditorSession();
+    if (!session) return response!;
 
     const { filename } = await params;
     const decodedFilename = decodeURIComponent(filename);
@@ -63,14 +49,22 @@ export async function GET(
         const rawContent = Buffer.from(data.content, "base64").toString("utf-8");
         const { data: frontmatter, content } = matter(rawContent);
 
+        // gray-matter は YAML の日付を Date オブジェクトとしてパースすることがあるため、
+        // フォームの <input type="date"> が扱える YYYY-MM-DD 文字列へ正規化する。
+        // これを怠ると編集時に date が失われ、保存し直すと日付が今日にリセットされてしまう。
+        const rawDate = frontmatter.date;
+        const normalizedDate = rawDate ? new Date(rawDate).toISOString().split('T')[0] : "";
+
         return NextResponse.json({
             title: frontmatter.title || "",
             author: frontmatter.author || "",
             tags: Array.isArray(frontmatter.tags) ? frontmatter.tags : String(frontmatter.tags || ""),
+            date: normalizedDate,
+            thumbnail: frontmatter.thumbnail || "",
             content: content,
             sha: data.sha
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error);
         return NextResponse.json({ error: getSafeErrorMessage(error) }, { status: 500 });
     }
@@ -80,8 +74,8 @@ export async function DELETE(
     req: Request,
     { params }: { params: Promise<{ filename: string }> }
 ) {
-    const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { session, response } = await requireEditorSession();
+    if (!session) return response!;
 
     const { filename } = await params;
     const decodedFilename = decodeURIComponent(filename);
@@ -113,7 +107,7 @@ export async function DELETE(
         });
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error);
         return NextResponse.json({ error: getSafeErrorMessage(error) }, { status: 500 });
     }
