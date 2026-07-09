@@ -207,7 +207,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--grad-brand);
+    background: var(--primary-color);
     color: var(--white);
     font-size: 0.7rem;
     font-weight: 700;
