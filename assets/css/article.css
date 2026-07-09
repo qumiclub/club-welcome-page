@@ -3,9 +3,9 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-template-areas:
-        "main header"
+        "header header"
         "main toc";
-    align-content: start;
+    grid-template-rows: auto 1fr;
     gap: 2rem;
     max-width: var(--max-width);
     margin: 0 auto;
@@ -22,6 +22,10 @@
 
 .article-header {
     grid-area: header;
+    background: var(--white);
+    padding: 2rem 2rem 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
     margin-bottom: 0;
 }
 
@@ -51,7 +55,7 @@
 .author-icon {
     width: 28px;
     height: 28px;
-    background: var(--grad-brand);
+    background: var(--primary-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -74,7 +78,7 @@
 
 .reading-time {
     font-family: var(--font-mono);
-    color: var(--primary-dark);
+    color: var(--text-light);
 }
 
 .article-tags {
@@ -267,6 +271,7 @@
 @media (max-width: 900px) {
     .article-content {
         grid-template-columns: 1fr;
+        grid-template-rows: auto;
         grid-template-areas:
             "header"
             "main"
@@ -314,8 +319,8 @@
 
 .main-content p code,
 .main-content li code {
-    background-color: var(--surface-tint);
-    color: var(--primary-dark);
+    background-color: var(--surface-alt);
+    color: #d946ef;
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
 }
@@ -339,7 +344,7 @@
     top: 0.5rem;
     right: 0.5rem;
     background: rgb(226 232 240 / 0.1);
-    color: var(--text-on-dark-muted);
+    color: #94a3b8;
     border: 1px solid rgb(226 232 240 / 0.2);
     border-radius: var(--radius-sm);
     font-size: var(--text-xs);
@@ -434,6 +439,11 @@
     background-color: var(--surface-tint);
 }
 
+.pager-prev {
+    text-align: left;
+    grid-column: 1;
+}
+
 .pager-next {
     text-align: right;
     grid-column: 2;
@@ -455,6 +465,11 @@
 @media (max-width: 600px) {
     .article-pager {
         grid-template-columns: 1fr;
+    }
+
+    .pager-prev {
+        grid-column: 1;
+        text-align: left;
     }
 
     .pager-next {

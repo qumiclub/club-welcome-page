@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from "next-auth/react";
 import { Loader2 } from 'lucide-react';
 import { useToast } from './ui/ToastProvider';
@@ -301,12 +301,21 @@ export default function Editor({ initialData }: EditorProps) {
         } else if (key === 'i') {
             e.preventDefault();
             applyFormat((v, s, en) => wrapSelection(v, s, en, '_'));
-        } else if (key === 's') {
-            e.preventDefault();
-            // 下書き保存の確認ダイアログを開く（そのまま送信はしない）
-            setConfirmAction({ published: false });
         }
+        // Ctrl+S はページ全体の keydown で処理する(タイトル等のフォーカス中でも効かせるため)
     };
+
+    // Ctrl/Cmd+S: どのフィールドにフォーカスがあっても下書き保存の確認を開く
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                setConfirmAction({ published: false });
+            }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, []);
 
     if (!session) {
         return <SignInPrompt message="エディタを利用するにはログインが必要です。" />;
