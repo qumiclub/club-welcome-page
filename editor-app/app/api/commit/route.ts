@@ -1,23 +1,68 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { Octokit } from "@octokit/rest";
 import matter from "gray-matter";
 import { NextResponse } from "next/server";
+import { requireEditorSession } from "@/lib/apiAuth";
+import { isValidFilename } from "@/lib/filename";
 
 // セキュリティ: エラーメッセージを安全化
-function getSafeErrorMessage(error: any): string {
+function getSafeErrorMessage(error: unknown): string {
     if (process.env.NODE_ENV === 'production') {
         return "An internal error occurred";
     }
-    return error?.message || "Unknown error";
+    return error instanceof Error ? error.message : String(error);
+}
+
+interface ArticleFrontmatter {
+    layout: string;
+    title: string;
+    author: string;
+    tags: unknown;
+    date: string;
+    thumbnail?: string;
+    published?: false;
+}
+
+/**
+ * 新規記事のファイルパスが既存ファイルと衝突していないか確認し、衝突していれば
+ * `-2`, `-3`, ... `-10` のサフィックスを付けて空いているパスを探す。
+ * （同日に同じタイトルの記事を作ると、常に同じファイル名になり上書き事故が起きていたため）
+ */
+async function findAvailablePath(
+    octokit: Octokit,
+    owner: string,
+    repo: string,
+    basePath: string
+): Promise<string> {
+    const exists = async (path: string): Promise<boolean> => {
+        try {
+            await octokit.repos.getContent({ owner, repo, path });
+            return true;
+        } catch (error: unknown) {
+            const status = (error as { status?: number } | null)?.status;
+            if (status === 404) return false;
+            throw error;
+        }
+    };
+
+    if (!(await exists(basePath))) {
+        return basePath;
+    }
+
+    const withoutExt = basePath.slice(0, -3); // ".md" を除去
+    for (let i = 2; i <= 10; i++) {
+        const candidate = `${withoutExt}-${i}.md`;
+        if (!(await exists(candidate))) {
+            return candidate;
+        }
+    }
+
+    // 10件まで衝突するのは通常起こり得ないが、念のためタイムスタンプでフォールバック
+    return `${withoutExt}-${Date.now()}.md`;
 }
 
 export async function POST(req: Request) {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, response } = await requireEditorSession();
+    if (!session) return response!;
 
     try {
         const { title, author, tags, content, sha, filename, published, date, thumbnail } = await req.json();
@@ -27,7 +72,7 @@ export async function POST(req: Request) {
         }
 
         // Create frontmatter
-        const frontmatter: any = {
+        const frontmatter: ArticleFrontmatter = {
             layout: "article",
             title,
             author,
@@ -70,16 +115,34 @@ export async function POST(req: Request) {
             } catch {
                 decodedFilename = filename;
             }
+
+            // セキュリティ: 更新パスにもファイル名検証を適用（パストラバーサル封じ）。
+            // 新規作成パスにはこの検証が無かった一方、更新パスはユーザー入力のfilenameを
+            // そのままGitHubパスへ埋め込んでいたため抜け穴になっていた。
+            if (!isValidFilename(decodedFilename)) {
+                return NextResponse.json({ error: "Invalid filename" }, { status: 400 });
+            }
+
             path = `_posts/${decodedFilename}`;
         } else {
-            // Creating new file
-            const dateStr = new Date().toISOString().split('T')[0];
+            // Creating new file: フォームの日付をファイル名の日付プレフィックスに使う。
+            // 以前は常に「今日」の日付が使われており、フォームでdateを過去/未来に
+            // 変更してもファイル名（ひいてはJekyllの公開日判定）に反映されなかった。
+            const validDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+            const dateStr =
+                typeof date === "string" && validDatePattern.test(date)
+                    ? date
+                    : new Date().toISOString().split('T')[0];
             const safeTitle = title.replace(/[^a-z0-9\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\-_]/gi, '-');
-            path = `_posts/${dateStr}-${safeTitle}.md`;
+            const basePath = `_posts/${dateStr}-${safeTitle}.md`;
+
+            // 同日・同タイトルのファイル名衝突（上書き事故）を防ぐため、既存ファイルの有無を
+            // 確認しながら -2, -3, ... -10 のサフィックスでデデュープする。
+            path = await findAvailablePath(octokit, owner, repo, basePath);
         }
 
         // Commit to GitHub
-        const response = await octokit.repos.createOrUpdateFileContents({
+        const commitResult = await octokit.repos.createOrUpdateFileContents({
             owner,
             repo,
             path,
@@ -92,8 +155,8 @@ export async function POST(req: Request) {
             },
         });
 
-        return NextResponse.json({ success: true, path, sha: response.data.content?.sha });
-    } catch (error: any) {
+        return NextResponse.json({ success: true, path, sha: commitResult.data.content?.sha });
+    } catch (error: unknown) {
         console.error(error);
         return NextResponse.json({ error: getSafeErrorMessage(error) }, { status: 500 });
     }

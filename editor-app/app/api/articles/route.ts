@@ -1,25 +1,34 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { Octokit } from "@octokit/rest";
 import { NextResponse } from "next/server";
 import matter from "gray-matter";
+import { requireEditorSession } from "@/lib/apiAuth";
 
 export const dynamic = 'force-dynamic';
 
+interface ArticleMeta {
+    name: string;
+    path: string;
+    sha: string;
+    download_url?: string | null;
+    title?: string;
+    tags?: string[] | string;
+    author?: string;
+    date?: string;
+    thumbnail?: string;
+    published?: boolean;
+}
+
 // セキュリティ: エラーメッセージを安全化
-function getSafeErrorMessage(error: any): string {
+function getSafeErrorMessage(error: unknown): string {
     if (process.env.NODE_ENV === 'production') {
         return "An internal error occurred";
     }
-    return error?.message || "Unknown error";
+    return error instanceof Error ? error.message : String(error);
 }
 
-export async function GET(req: Request) {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export async function GET() {
+    const { session, response } = await requireEditorSession();
+    if (!session) return response!;
 
     const octokit = new Octokit({
         auth: process.env.GITHUB_TOKEN,
@@ -48,7 +57,7 @@ export async function GET(req: Request) {
         const markdownFiles = data.filter(file => file.name.endsWith(".md"));
 
         // Fetch all contents in parallel
-        const articles = await Promise.all(markdownFiles.map(async (file) => {
+        const articles: ArticleMeta[] = await Promise.all(markdownFiles.map(async (file) => {
             try {
                 const decodedName = decodeURIComponent(file.name);
                 const decodedPath = decodeURIComponent(file.path);
@@ -92,13 +101,13 @@ export async function GET(req: Request) {
         const allTags = new Set<string>();
         const allAuthors = new Set<string>();
 
-        articles.forEach((article: any) => {
+        articles.forEach((article) => {
             if (article.tags) {
                 const tags = Array.isArray(article.tags)
                     ? article.tags
                     : String(article.tags).split(',').map(t => t.trim());
 
-                tags.forEach((tag: any) => {
+                tags.forEach((tag) => {
                     if (tag) allTags.add(String(tag));
                 });
             }
@@ -108,7 +117,7 @@ export async function GET(req: Request) {
         });
 
         // Sort by date (newest first) or filename if date is missing
-        articles.sort((a: any, b: any) => {
+        articles.sort((a, b) => {
             const dateA = a.date ? new Date(a.date).getTime() : 0;
             const dateB = b.date ? new Date(b.date).getTime() : 0;
             if (dateA !== dateB) return dateB - dateA;
@@ -120,7 +129,7 @@ export async function GET(req: Request) {
             tags: Array.from(allTags),
             authors: Array.from(allAuthors)
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error);
         return NextResponse.json({ error: getSafeErrorMessage(error) }, { status: 500 });
     }
