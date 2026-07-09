@@ -1,0 +1,38 @@
+<!--
+  記事カード共通パーツ
+  使い方: {% include post-card.html post=post featured=true %} ("featured" は任意)
+-->
+{% assign post = include.post %}
+{% assign chars = post.content | strip_html | strip_newlines | size %}
+{% assign minutes = chars | divided_by: 500 | plus: 1 %}
+{% assign excerpt_source = post.excerpt | strip_html | strip_newlines | strip %}
+{% if excerpt_source == "" %}
+  {% assign excerpt_source = post.content | strip_html | strip_newlines | strip %}
+{% endif %}
+{% assign excerpt_text = excerpt_source | truncate: 80 %}
+<a href="{{ post.url | relative_url }}" class="post-card{% if include.featured %} post-card--featured{% endif %}">
+  <div class="post-card-meta">
+    <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
+    <span class="post-card-reading-time">約{{ minutes }}分</span>
+  </div>
+  <div class="post-card-content">
+    <h2 class="post-card-title">{{ post.title }}</h2>
+    {% if excerpt_text != "" %}
+    <p class="post-card-excerpt">{{ excerpt_text }}</p>
+    {% endif %}
+    <div class="post-card-footer">
+      {% if post.author %}
+      <span class="post-card-author">
+        <span class="author-avatar" aria-hidden="true">{{ post.author | slice: 0 }}</span>{{ post.author }}
+      </span>
+      {% endif %}
+      {% if post.tags %}
+      <div class="post-card-tags">
+        {% for tag in post.tags %}
+        <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</a>

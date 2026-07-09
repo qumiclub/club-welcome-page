@@ -33,8 +33,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const idCounter = {};
 
     headings.forEach(heading => {
+      // TOC/アンカー生成前に見出しの表示テキストを確保しておく
+      // (この後 heading にアンカーリンク要素を追加するため、後から読むと文字が混ざる)
+      const headingText = heading.textContent.trim();
+
       if (!heading.id) {
-        let baseId = heading.textContent.trim().replace(/\s+/g, '-');
+        let baseId = headingText.replace(/\s+/g, '-');
         // 同じIDが既に存在する場合はカウンターを追加
         if (idCounter[baseId] !== undefined) {
           idCounter[baseId]++;
@@ -50,11 +54,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const a = document.createElement('a');
       a.href = '#' + heading.id;
-      a.textContent = heading.textContent;
+      a.textContent = headingText;
 
       li.appendChild(a);
       ul.appendChild(li);
       tocLinks.push({ link: a, target: heading });
+
+      // h2/h3 にはホバー時に表示するアンカーリンクを付与
+      if (heading.tagName === 'H2' || heading.tagName === 'H3') {
+        const anchor = document.createElement('a');
+        anchor.className = 'heading-anchor';
+        anchor.href = '#' + heading.id;
+        anchor.textContent = '#';
+        anchor.setAttribute('aria-label', 'この見出しへのリンク');
+        heading.appendChild(anchor);
+      }
     });
 
     // Scroll Spy
@@ -78,4 +92,59 @@ document.addEventListener('DOMContentLoaded', function () {
 
     headings.forEach(heading => observer.observe(heading));
   }
+
+  // コードブロックにコピーボタンを追加
+  document.querySelectorAll('.main-content pre').forEach(function (pre) {
+    if (pre.querySelector('.code-copy-btn')) {
+      return;
+    }
+    // ボタンを追加する前にコード本文を確保しておく
+    const codeText = pre.textContent;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'code-copy-btn';
+    button.textContent = 'コピー';
+    button.setAttribute('aria-label', 'コードをコピーする');
+
+    button.addEventListener('click', function () {
+      if (!navigator.clipboard || !navigator.clipboard.writeText) {
+        return;
+      }
+      navigator.clipboard.writeText(codeText).then(function () {
+        button.textContent = 'コピーしました';
+        button.classList.add('is-copied');
+        setTimeout(function () {
+          button.textContent = 'コピー';
+          button.classList.remove('is-copied');
+        }, 1500);
+      });
+    });
+
+    pre.appendChild(button);
+  });
+
+  // 記事シェア行の「リンクをコピー」ボタン
+  document.querySelectorAll('.share-copy').forEach(function (button) {
+    const url = button.dataset.url;
+    const label = button.querySelector('.share-copy-text');
+
+    button.addEventListener('click', function () {
+      if (!navigator.clipboard || !navigator.clipboard.writeText || !url) {
+        return;
+      }
+      navigator.clipboard.writeText(url).then(function () {
+        if (label) {
+          label.textContent = 'コピーしました';
+        }
+        button.classList.add('is-copied');
+        setTimeout(function () {
+          if (label) {
+            label.textContent = 'リンクをコピー';
+          }
+          button.classList.remove('is-copied');
+        }, 1500);
+      });
+    });
+  });
 });

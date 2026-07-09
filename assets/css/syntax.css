@@ -1,0 +1,19 @@
+/*
+ * rouge シンタックスハイライト用トークンCSS
+ * One Dark 系配色をブランドの ink 背景 (#0f172a) に載せたテーマ。
+ * Jekyll のデフォルトハイライタ rouge が生成する .highlight 配下のクラスに対応する。
+ */
+.main-content pre, .highlight { background:#0f172a; color:#abb2bf; }
+.highlight .c,.highlight .c1,.highlight .cm,.highlight .cp { color:#7f848e; font-style:italic }
+.highlight .k,.highlight .kd,.highlight .kn,.highlight .kr,.highlight .kt,.highlight .kc,.highlight .kp { color:#c678dd }
+.highlight .s,.highlight .s1,.highlight .s2,.highlight .sb,.highlight .sh,.highlight .si,.highlight .se,.highlight .sx,.highlight .sr { color:#98c379 }
+.highlight .m,.highlight .mi,.highlight .mf,.highlight .mh,.highlight .mo,.highlight .il { color:#d19a66 }
+.highlight .nf,.highlight .fm { color:#61afef }
+.highlight .nc,.highlight .nn,.highlight .nd { color:#e5c07b }
+.highlight .nb,.highlight .bp { color:#e5c07b }
+.highlight .na,.highlight .nt { color:#e06c75 }
+.highlight .nv,.highlight .vi,.highlight .vg,.highlight .vc { color:#e06c75 }
+.highlight .o,.highlight .ow,.highlight .p { color:#56b6c2 }
+.highlight .gd { color:#e06c75 } .highlight .gi { color:#98c379 }
+.highlight .gh,.highlight .gu { color:#61afef; font-weight:700 }
+.highlight .err { color:#f44747 }
