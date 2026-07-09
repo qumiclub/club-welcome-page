@@ -1,6 +1,8 @@
 <!--
   記事カード共通パーツ
-  使い方: {% include post-card.html post=post featured=true %} ("featured" は任意)
+  使い方: include タグに post を渡す。featured=true を渡すと大きめ表示 (任意)。
+  注意: コメント内でも Liquid は実行されるため、include の実例をここに書かないこと
+  (自分自身を再帰 include して "Nesting too deep" でビルドが落ちる)。
 -->
 {% assign post = include.post %}
 {% assign chars = post.content | strip_html | strip_newlines | size %}
