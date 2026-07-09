@@ -1,25 +1,45 @@
 "use client";
 
-import { useSession, signIn } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Trash2, Edit, Plus, Loader2 } from "lucide-react";
+import { Trash2, Pencil, Plus, Loader2, ArrowUpDown, Search } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { AppHeader } from "@/components/AppHeader";
+import { SignInPrompt } from "@/components/SignInPrompt";
 
 interface Article {
     name: string;
     path: string;
     sha: string;
     download_url: string;
+    title?: string;
+    author?: string;
+    date?: string;
+    tags?: string[] | string;
+    thumbnail?: string;
     published?: boolean;
+}
+
+function toTagList(tags?: string[] | string): string[] {
+    if (!tags) return [];
+    if (Array.isArray(tags)) return tags.map(String).filter(Boolean);
+    return String(tags).split(",").map((t) => t.trim()).filter(Boolean);
+}
+
+function formatDate(date?: string): string {
+    if (!date) return "-";
+    const d = new Date(date);
+    if (Number.isNaN(d.getTime())) return "-";
+    return d.toISOString().split("T")[0];
 }
 
 function ArticleListSkeleton() {
     return (
-        <div className="bg-white rounded shadow overflow-hidden">
-            <div className="p-4 border-b bg-gray-100">
+        <div className="overflow-hidden rounded-lg bg-white shadow">
+            <div className="border-b bg-slate-50 p-4">
                 <Skeleton className="h-4 w-32" />
             </div>
             <div className="divide-y">
@@ -44,6 +64,7 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
     const [currentPage, setCurrentPage] = useState(1);
     const [pendingDelete, setPendingDelete] = useState<Article | null>(null);
     const [deletingName, setDeletingName] = useState<string | null>(null);
@@ -62,7 +83,7 @@ export default function Dashboard() {
             if (res.ok) {
                 setArticles(data.articles);
             } else {
-                setError(data.error || "Failed to fetch articles");
+                setError(data.error || "記事の取得に失敗しました");
             }
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : String(err));
@@ -87,69 +108,99 @@ export default function Dashboard() {
             });
 
             if (res.ok) {
-                setArticles(articles.filter((a) => a.name !== filename));
-                toast.success(`"${filename}" was deleted.`);
+                setArticles((prev) => prev.filter((a) => a.name !== filename));
+                toast.success(`「${filename}」を削除しました。`);
             } else {
                 const data = await res.json();
-                toast.error(`Failed to delete: ${data.error}`);
+                toast.error(`削除に失敗しました: ${data.error}`);
             }
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : String(err);
-            toast.error(`Error: ${message}`);
+            toast.error(`エラー: ${message}`);
         } finally {
             setDeletingName(null);
         }
     };
 
-    const filteredArticles = articles.filter(article =>
-        article.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredArticles = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+        let list = articles;
 
-    const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
+        if (query) {
+            list = list.filter((article) => {
+                const tagList = toTagList(article.tags);
+                const haystack = [article.name, article.title, article.author, ...tagList]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+                return haystack.includes(query);
+            });
+        }
+
+        return [...list].sort((a, b) => {
+            const dateA = a.date ? new Date(a.date).getTime() : 0;
+            const dateB = b.date ? new Date(b.date).getTime() : 0;
+            if (dateA !== dateB) {
+                return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+            }
+            return sortOrder === "newest" ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name);
+        });
+    }, [articles, searchQuery, sortOrder]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredArticles.length / itemsPerPage));
     const paginatedArticles = filteredArticles.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
     if (!session) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <p className="mb-4">Please sign in to access the dashboard.</p>
-                <button
-                    onClick={() => signIn()}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                    Sign In
-                </button>
-            </div>
-        );
+        return <SignInPrompt message="ダッシュボードを利用するにはログインが必要です。" />;
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="max-w-4xl mx-auto">
-                <header className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+        <div className="min-h-screen bg-slate-50">
+            <AppHeader userEmail={session.user?.email} />
+
+            <div className="mx-auto max-w-5xl p-4 sm:p-8">
+                <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <h1 className="text-2xl font-bold text-ink sm:text-3xl">ダッシュボード</h1>
                     <Link
                         href="/"
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 font-semibold text-white shadow-sm hover:bg-primary-dark"
                     >
                         <Plus size={20} />
-                        New Article
+                        新規作成
                     </Link>
                 </header>
 
-                <div className="mb-6">
-                    <input
-                        type="text"
-                        placeholder="Search articles..."
-                        className="w-full p-3 border rounded shadow-sm text-gray-700"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setCurrentPage(1); // Reset to first page on search
+                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <div className="relative flex-1">
+                        <Search
+                            size={18}
+                            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                        />
+                        <input
+                            type="text"
+                            placeholder="タイトル・著者・タグで検索..."
+                            className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-slate-800 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                        />
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setSortOrder((prev) => (prev === "newest" ? "oldest" : "newest"));
+                            setCurrentPage(1);
                         }}
-                    />
+                        className="flex items-center justify-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold text-slate-600 shadow-sm hover:bg-slate-50"
+                    >
+                        <ArrowUpDown size={16} />
+                        {sortOrder === "newest" ? "新しい順" : "古い順"}
+                    </button>
                 </div>
 
                 {loading ? (
@@ -157,102 +208,198 @@ export default function Dashboard() {
                 ) : error ? (
                     <p className="text-red-600">{error}</p>
                 ) : (
-                    <div className="bg-white rounded shadow overflow-hidden">
-                        <table className="w-full text-left border-collapse table-fixed">
-                            <thead>
-                                <tr className="bg-gray-100 border-b">
-                                    <th className="p-4 font-semibold text-gray-600">Article Name</th>
-                                    <th className="p-4 font-semibold text-gray-600 text-right" style={{ width: '140px' }}>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paginatedArticles.map((article) => {
-                                    const isDeleting = deletingName === article.name;
-                                    return (
-                                        <tr key={article.sha} className="border-b last:border-0 hover:bg-gray-50">
-                                            <td className="p-4 text-gray-800 overflow-hidden">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="truncate" title={article.name}>
-                                                        {article.name}
-                                                    </span>
-                                                    {article.published === false && (
-                                                        <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full whitespace-nowrap flex-shrink-0">
-                                                            Draft
+                    <>
+                        {/* Desktop table */}
+                        <div className="hidden overflow-hidden rounded-lg bg-white shadow md:block">
+                            <table className="w-full border-collapse text-left">
+                                <thead>
+                                    <tr className="border-b bg-slate-50 text-sm text-slate-500">
+                                        <th className="p-4 font-semibold">タイトル</th>
+                                        <th className="p-4 font-semibold">著者</th>
+                                        <th className="p-4 font-semibold">日付</th>
+                                        <th className="p-4 font-semibold">タグ</th>
+                                        <th className="p-4 font-semibold text-right" style={{ width: "120px" }}>
+                                            操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {paginatedArticles.map((article) => {
+                                        const isDeleting = deletingName === article.name;
+                                        const tagList = toTagList(article.tags);
+                                        return (
+                                            <tr key={article.sha} className="border-b last:border-0 hover:bg-slate-50">
+                                                <td className="p-4 text-ink">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-medium" title={article.title || article.name}>
+                                                            {article.title || article.name}
                                                         </span>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="p-4" style={{ width: '140px' }}>
-                                                <div className="flex justify-end gap-3">
-                                                    <Link
-                                                        href={`/edit/${encodeURIComponent(article.name)}`}
-                                                        className={`flex items-center gap-1 text-blue-600 hover:text-blue-800 ${isDeleting ? 'pointer-events-none opacity-50' : ''}`}
-                                                        title="Edit"
-                                                    >
-                                                        <Edit size={18} />
-                                                        <span className="hidden sm:inline">Edit</span>
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => setPendingDelete(article)}
-                                                        disabled={isDeleting}
-                                                        className="flex items-center gap-1 text-red-600 hover:text-red-800 disabled:opacity-50"
-                                                        title="Delete"
-                                                    >
-                                                        {isDeleting ? (
-                                                            <Loader2 size={18} className="animate-spin" />
-                                                        ) : (
-                                                            <Trash2 size={18} />
+                                                        {article.published === false && (
+                                                            <span className="shrink-0 whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                                                                下書き
+                                                            </span>
                                                         )}
-                                                        <span className="hidden sm:inline">Delete</span>
-                                                    </button>
-                                                </div>
+                                                    </div>
+                                                </td>
+                                                <td className="p-4 text-sm text-slate-600">{article.author || "-"}</td>
+                                                <td className="p-4 font-mono text-sm text-slate-500">
+                                                    {formatDate(article.date)}
+                                                </td>
+                                                <td className="p-4">
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {tagList.map((tag) => (
+                                                            <span
+                                                                key={tag}
+                                                                className="rounded-full bg-[#ccfbf1] px-2 py-0.5 text-xs font-medium text-[#0f766e]"
+                                                            >
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </td>
+                                                <td className="p-4">
+                                                    <div className="flex justify-end gap-3">
+                                                        <Link
+                                                            href={`/edit/${encodeURIComponent(article.name)}`}
+                                                            className={`flex items-center gap-1 text-primary hover:text-primary-dark ${isDeleting ? "pointer-events-none opacity-50" : ""
+                                                                }`}
+                                                            title="編集"
+                                                        >
+                                                            <Pencil size={18} />
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => setPendingDelete(article)}
+                                                            disabled={isDeleting}
+                                                            className="flex items-center gap-1 text-red-600 hover:text-red-800 disabled:opacity-50"
+                                                            title="削除"
+                                                        >
+                                                            {isDeleting ? (
+                                                                <Loader2 size={18} className="animate-spin" />
+                                                            ) : (
+                                                                <Trash2 size={18} />
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                    {paginatedArticles.length === 0 && (
+                                        <tr>
+                                            <td colSpan={5} className="p-8 text-center text-slate-500">
+                                                {searchQuery
+                                                    ? "検索条件に一致する記事がありません。"
+                                                    : "記事がありません。作成してみましょう！"}
                                             </td>
                                         </tr>
-                                    );
-                                })}
-                                {paginatedArticles.length === 0 && (
-                                    <tr>
-                                        <td colSpan={2} className="p-8 text-center text-gray-500">
-                                            {searchQuery ? 'No articles match your search.' : 'No articles found. Create one!'}
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
 
-                        {/* Pagination Controls */}
+                        {/* Mobile card list */}
+                        <div className="flex flex-col gap-3 md:hidden">
+                            {paginatedArticles.map((article) => {
+                                const isDeleting = deletingName === article.name;
+                                const tagList = toTagList(article.tags);
+                                return (
+                                    <div key={article.sha} className="rounded-lg bg-white p-4 shadow">
+                                        <div className="mb-2 flex items-start justify-between gap-2">
+                                            <span className="font-semibold text-ink" title={article.title || article.name}>
+                                                {article.title || article.name}
+                                            </span>
+                                            {article.published === false && (
+                                                <span className="shrink-0 whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                                                    下書き
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+                                            {article.author && <span>{article.author}</span>}
+                                            <span className="font-mono">{formatDate(article.date)}</span>
+                                        </div>
+                                        {tagList.length > 0 && (
+                                            <div className="mb-3 flex flex-wrap gap-1">
+                                                {tagList.map((tag) => (
+                                                    <span
+                                                        key={tag}
+                                                        className="rounded-full bg-[#ccfbf1] px-2 py-0.5 text-xs font-medium text-[#0f766e]"
+                                                    >
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        <div className="flex items-center gap-4 border-t pt-3">
+                                            <Link
+                                                href={`/edit/${encodeURIComponent(article.name)}`}
+                                                className={`flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-dark ${isDeleting ? "pointer-events-none opacity-50" : ""
+                                                    }`}
+                                            >
+                                                <Pencil size={16} />
+                                                編集
+                                            </Link>
+                                            <button
+                                                onClick={() => setPendingDelete(article)}
+                                                disabled={isDeleting}
+                                                className="flex items-center gap-1 text-sm font-semibold text-red-600 hover:text-red-800 disabled:opacity-50"
+                                            >
+                                                {isDeleting ? (
+                                                    <Loader2 size={16} className="animate-spin" />
+                                                ) : (
+                                                    <Trash2 size={16} />
+                                                )}
+                                                削除
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            {paginatedArticles.length === 0 && (
+                                <p className="rounded-lg bg-white p-8 text-center text-slate-500 shadow">
+                                    {searchQuery
+                                        ? "検索条件に一致する記事がありません。"
+                                        : "記事がありません。作成してみましょう！"}
+                                </p>
+                            )}
+                        </div>
+
                         {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-4 p-4 border-t bg-gray-50">
+                            <div className="mt-4 flex items-center justify-center gap-4 rounded-lg bg-white p-4 shadow">
                                 <button
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                     disabled={currentPage === 1}
-                                    className="px-3 py-1 border rounded bg-white disabled:opacity-50 text-gray-700"
+                                    className="rounded border px-3 py-1 text-slate-700 disabled:opacity-50"
                                 >
-                                    Previous
+                                    前へ
                                 </button>
-                                <span className="text-gray-600">
-                                    Page {currentPage} of {totalPages}
+                                <span className="text-sm text-slate-600">
+                                    {currentPage} / {totalPages} ページ
                                 </span>
                                 <button
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                     disabled={currentPage === totalPages}
-                                    className="px-3 py-1 border rounded bg-white disabled:opacity-50 text-gray-700"
+                                    className="rounded border px-3 py-1 text-slate-700 disabled:opacity-50"
                                 >
-                                    Next
+                                    次へ
                                 </button>
                             </div>
                         )}
-                    </div>
+                    </>
                 )}
             </div>
 
             <ConfirmDialog
                 open={!!pendingDelete}
                 variant="danger"
-                title="Delete Article"
-                message={pendingDelete ? `Are you sure you want to delete "${pendingDelete.name}"? This cannot be undone.` : ''}
-                confirmLabel="Delete"
-                cancelLabel="Cancel"
+                title="記事を削除"
+                message={
+                    pendingDelete
+                        ? `「${pendingDelete.title || pendingDelete.name}」を削除しますか？この操作は取り消せません。`
+                        : ""
+                }
+                confirmLabel="削除する"
+                cancelLabel="キャンセル"
                 onConfirm={confirmDelete}
                 onCancel={() => setPendingDelete(null)}
             />

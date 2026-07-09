@@ -3,8 +3,9 @@
 import dynamic from "next/dynamic";
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 import { use, useEffect, useState } from "react";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { SignInPrompt } from "@/components/SignInPrompt";
 
 function EditorSkeleton() {
     return (
@@ -53,6 +54,8 @@ export default function EditPage({ params }: { params: Promise<{ filename: strin
         content: string;
         sha: string;
         filename: string;
+        date: string;
+        thumbnail: string;
     } | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -79,26 +82,22 @@ export default function EditPage({ params }: { params: Promise<{ filename: strin
                 content: data.content,
                 sha: data.sha,
                 filename: filename,
+                date: data.date || "",
+                thumbnail: data.thumbnail || "",
             });
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : String(err));
         } finally {
             setLoading(false);
         }
     };
 
     if (!session) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <button onClick={() => signIn()} className="px-4 py-2 bg-blue-600 text-white rounded">
-                    Sign In
-                </button>
-            </div>
-        );
+        return <SignInPrompt message="記事を編集するにはログインが必要です。" />;
     }
 
     if (loading) return <EditorSkeleton />;
-    if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
+    if (error) return <div className="p-8 text-red-600">エラー: {error}</div>;
 
     return <Editor initialData={initialData} />;
 }

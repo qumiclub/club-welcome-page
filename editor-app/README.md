@@ -86,26 +86,45 @@ editor-app/
 │   │   │   ├── route.ts      # GET: 記事一覧
 │   │   │   └── [filename]/
 │   │   │       └── route.ts  # GET: 記事詳細 / DELETE: 記事削除
-│   │   ├── auth/             # NextAuth 認証
-│   │   ├── commit/           # 記事の作成・更新 API
+│   │   ├── auth/              # NextAuth 認証
+│   │   ├── commit/            # 記事の作成・更新 API（新規はファイル名デデュープ付き）
 │   │   │   └── route.ts
-│   │   ├── images/           # 画像一覧 API
+│   │   ├── images/            # 画像一覧 API
 │   │   │   └── route.ts
-│   │   └── upload/           # 画像アップロード API
+│   │   └── upload/            # 画像アップロード API
 │   │       └── route.ts
-│   ├── auth/error/           # 認証エラーページ
-│   ├── dashboard/            # ダッシュボード（記事管理）
-│   ├── edit/[filename]/      # 記事編集ページ
-│   ├── layout.tsx            # ルートレイアウト
-│   ├── page.tsx              # トップページ（新規記事作成）
-│   ├── globals.css
-│   └── preview.css           # プレビュー用CSS
+│   ├── auth/
+│   │   ├── error/             # 認証エラーページ（日本語）
+│   │   └── signin/            # カスタムサインインページ
+│   ├── dashboard/              # ダッシュボード（記事管理・検索・並び替え）
+│   ├── edit/[filename]/        # 記事編集ページ
+│   ├── layout.tsx              # ルートレイアウト（lang="ja", Noto Sans JP）
+│   ├── page.tsx                # トップページ（新規記事作成）
+│   ├── globals.css             # Tailwind 4 @theme（ブランドトークン）
+│   └── preview.css             # プレビュー用CSS（サイトのデザインと同期）
 ├── components/
-│   ├── Editor.tsx            # メインエディタコンポーネント
-│   └── Providers.tsx         # NextAuth SessionProvider
+│   ├── Editor.tsx              # メインエディタコンポーネント
+│   ├── AppHeader.tsx           # Editor/Dashboard共通のヘッダー
+│   ├── SignInPrompt.tsx        # 未認証時の共通サインイン導線
+│   ├── Providers.tsx           # NextAuth SessionProvider + ToastProvider
+│   ├── editor/
+│   │   ├── MetaForm.tsx        # タイトル/著者/タグ/日付/サムネイル入力
+│   │   ├── TagSelector.tsx     # タグ検索・複数選択コンボボックス
+│   │   ├── ImageManagerModal.tsx # 画像一覧・アップロードモーダル
+│   │   ├── MarkdownPreview.tsx # Jekyll記事表示に準拠したライブプレビュー
+│   │   └── MarkdownToolbar.tsx # 太字/見出し/リンク等のMarkdown書式ツールバー
+│   └── ui/
+│       ├── ConfirmDialog.tsx   # window.confirm() 代替の確認モーダル
+│       ├── Toast.tsx / ToastProvider.tsx # トースト通知
+│       └── Skeleton.tsx        # ローディングプレースホルダー
 ├── lib/
-│   └── auth.ts               # NextAuth設定（Google OAuth + メール許可リスト）
-├── env.example               # 環境変数テンプレート
+│   ├── auth.ts                 # NextAuth設定（Google OAuth + カスタムサインイン/エラーページ登録）
+│   ├── apiAuth.ts              # requireEditorSession(): 全APIルート共通のセッション+許可リスト検証
+│   ├── filename.ts             # isValidFilename(): _posts/ ファイル名のパストラバーサル対策
+│   ├── imageUrl.ts             # resolveImageSrc(): プレビュー用の画像URL解決（env駆動）
+│   ├── markdownFormat.ts       # Markdownツールバー/ショートカット用の選択範囲操作
+│   └── useDraftAutosave.ts     # localStorageへのデバウンス自動保存 + 復元
+├── env.example                 # 環境変数テンプレート
 ├── next.config.ts
 ├── package.json
 └── tsconfig.json
@@ -116,7 +135,8 @@ editor-app/
 ## 🔒 セキュリティ
 
 - **認証**: Google OAuth + メールアドレス許可リストによるアクセス制限
-- **Path Traversal防止**: APIエンドポイントでファイル名を厳密に検証
+- **許可リストのリクエスト毎検証**: `lib/apiAuth.ts` の `requireEditorSession()` を全APIルートの入口で呼び出し、セッションと `ALLOWED_EMAILS` を**リクエストごとに**再検証する。NextAuthの `signIn` コールバックはサインイン時にしか走らないため、これが無いと許可リストを後から変更（部員の脱退など）しても既存セッションでAPIにアクセスできてしまう
+- **Path Traversal防止**: `lib/filename.ts` の `isValidFilename()` を記事の取得・削除・更新の全パスで共有し、ファイル名を厳密に検証
 - **ファイルアップロード制限**: 画像MIMEタイプのみ許可、最大5MB
 - **エラーメッセージ安全化**: 本番環境では内部エラーの詳細を非表示
 

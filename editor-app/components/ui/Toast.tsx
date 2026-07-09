@@ -36,7 +36,7 @@ export function Toast({ toast, onClose }: ToastProps) {
             <button
                 type="button"
                 onClick={() => onClose(toast.id)}
-                aria-label="Close notification"
+                aria-label="通知を閉じる"
                 className="shrink-0 rounded p-0.5 text-current opacity-60 hover:opacity-100"
             >
                 <X size={16} />

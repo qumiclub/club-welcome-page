@@ -114,7 +114,7 @@ export function TagSelector({ tags, onChange, availableTags }: TagSelectorProps)
                     aria-controls={listboxId}
                     aria-activedescendant={activeOptionId}
                     aria-autocomplete="list"
-                    placeholder="Search & Add Tags..."
+                    placeholder="タグを検索・追加..."
                     className="w-full p-2 border rounded text-gray-900 bg-white"
                     value={search}
                     onChange={(e) => {
@@ -145,9 +145,9 @@ export function TagSelector({ tags, onChange, availableTags }: TagSelectorProps)
                                 onClick={() => addTag(option.value)}
                                 onMouseEnter={() => setActiveIndex(index)}
                                 className={`block w-full text-left px-3 py-2 text-sm ${index === activeIndex ? "bg-gray-100" : ""
-                                    } ${option.kind === "new" ? "text-blue-600 font-semibold" : "text-gray-800"}`}
+                                    } ${option.kind === "new" ? "text-primary font-semibold" : "text-gray-800"}`}
                             >
-                                {option.kind === "new" ? `Add new: "${option.value}"` : option.value}
+                                {option.kind === "new" ? `新規タグ: "${option.value}"` : option.value}
                             </button>
                         ))}
                     </div>
@@ -157,14 +157,14 @@ export function TagSelector({ tags, onChange, availableTags }: TagSelectorProps)
                 {selectedTags.map((tag) => (
                     <span
                         key={tag}
-                        className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#ccfbf1] text-[#0f766e]"
                     >
                         {tag}
                         <button
                             type="button"
                             onClick={() => removeTag(tag)}
-                            className="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none"
-                            aria-label={`Remove tag ${tag}`}
+                            className="ml-1 text-[#0f766e] hover:text-ink focus:outline-none"
+                            aria-label={`タグ「${tag}」を削除`}
                         >
                             ×
                         </button>
