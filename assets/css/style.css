@@ -13,6 +13,7 @@
   --text-light: #64748b;
   --background-color: #f8fafc;
   --white: #ffffff;
+  --header-bg: #f8f6ef; /* ロゴ画像の背景色に合わせたウォームホワイト */
   --border-color: #e2e8f0;
   --border-color-strong: #cbd5e1;
   --surface-alt: #f1f5f9;
@@ -171,7 +172,7 @@ summary:focus-visible,
 
 /* Header */
 .site-header {
-  background-color: var(--white);
+  background-color: var(--header-bg);
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
@@ -279,16 +280,6 @@ summary:focus-visible,
 .hero-content {
   max-width: 800px;
   margin: 0 auto;
-}
-
-.hero-eyebrow {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: rgb(255 255 255 / 0.85);
-  margin-bottom: var(--space-4);
 }
 
 .hero h1 {
