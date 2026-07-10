@@ -3,9 +3,9 @@
 @import "syntax.css";
 
 :root {
-  /* ブランドカラー */
-  --primary: #0d9488;
-  --primary-dark: #0f766e;
+  /* ブランドカラー(部ロゴに合わせたブルー基調) */
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
   --accent: #f59e0b;
 
   /* サーフェス(ライトコンテンツ面) */
@@ -59,7 +59,7 @@
 
   /* 旧トークン名のエイリアス(既存セレクタ互換) */
   --primary-color: var(--primary);
-  --secondary-color: #3b82f6;
+  --secondary-color: #0ea5e9;
   --accent-color: var(--accent);
   --border-radius: var(--radius-md);
 }
