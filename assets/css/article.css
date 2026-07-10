@@ -88,8 +88,15 @@
 }
 
 /* Table of Contents (collapsible on mobile via <details>) */
+/* sticky は details 要素自体に付ける。details の中身はブラウザが内部ラッパーで
+   包むため、中の div に sticky を付けても可動域が確保できず追従しない */
 .toc-collapsible {
     grid-area: toc;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+    max-height: calc(100vh - var(--header-height) - 4rem);
+    overflow-y: auto;
 }
 
 .toc-collapsible summary {
@@ -120,10 +127,6 @@
     background: transparent;
     padding: 0;
     box-shadow: none;
-    position: sticky;
-    top: calc(var(--header-height) + 2rem);
-    max-height: calc(100vh - var(--header-height) - 4rem);
-    overflow-y: auto;
     border-left: 2px solid var(--border-color);
 }
 
@@ -279,14 +282,15 @@
     }
 
     .toc-collapsible {
+        position: static;
+        max-height: none;
+        overflow: visible;
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
         background: var(--white);
     }
 
     .table-of-content {
-        position: static;
-        max-height: none;
         border-left: none;
         padding: 0 1rem 1rem;
     }
