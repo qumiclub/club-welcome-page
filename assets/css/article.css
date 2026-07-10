@@ -1,19 +1,25 @@
 /* Article Layout */
 .article-content {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    grid-template-areas:
-        "header header"
-        "main toc";
-    grid-template-rows: auto 1fr;
-    gap: 2rem;
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 2rem;
 }
 
+/* 本文とTOCの横並び。sticky なTOCサイドバーの定番構成:
+   flex + align-items:flex-start にすることで、TOC(flexアイテム)の
+   containing block が本文と同じ高さの親(.article-body)になり、
+   スクロールに追従できるようになる。
+   (CSS Grid + position:sticky はブラウザ間で追従しない実装差が大きいため避ける) */
+.article-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
 .main-content {
-    grid-area: main;
+    flex: 3;
+    min-width: 0;
     background: var(--white);
     padding: 2rem;
     border-radius: var(--radius-lg);
@@ -21,7 +27,6 @@
 }
 
 .article-header {
-    grid-area: header;
     background: var(--white);
     padding: 2rem 2rem 1.5rem;
     border-radius: var(--radius-lg);
@@ -91,8 +96,8 @@
 /* sticky は details 要素自体に付ける。details の中身はブラウザが内部ラッパーで
    包むため、中の div に sticky を付けても可動域が確保できず追従しない */
 .toc-collapsible {
-    grid-area: toc;
-    align-self: start;
+    flex: 1;
+    min-width: 0;
     position: sticky;
     top: calc(var(--header-height) + 2rem);
     max-height: calc(100vh - var(--header-height) - 4rem);
@@ -272,13 +277,8 @@
 /* Responsive: single column, article body first, then meta/header on top and
    TOC (collapsed) after the body */
 @media (max-width: 900px) {
-    .article-content {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        grid-template-areas:
-            "header"
-            "main"
-            "toc";
+    .article-body {
+        flex-direction: column;
     }
 
     .toc-collapsible {
