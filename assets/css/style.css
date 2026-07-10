@@ -13,7 +13,7 @@
   --text-light: #64748b;
   --background-color: #f8fafc;
   --white: #ffffff;
-  --header-bg: #f8f6ef; /* ロゴ画像の背景色に合わせたウォームホワイト */
+  --header-bg: #f9f6f1; /* ロゴ画像(assets/images/logo.png)の背景ピクセルを実測した値 */
   --border-color: #e2e8f0;
   --border-color-strong: #cbd5e1;
   --surface-alt: #f1f5f9;
