@@ -191,10 +191,20 @@ summary:focus-visible,
 }
 
 .site-title a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--primary-color);
   white-space: nowrap;
+}
+
+.site-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 
 /* Mobile nav toggle (hamburger) */
